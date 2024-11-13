@@ -1,6 +1,6 @@
 
 
-[![Qianjun-Xia](https://img.shields.io/badge/Qianjun-Xia-github-blue?logo=github)](https://github.com/Qianjun-Xia)
+[![Qianjun-Xia](https://img.shields.io/badge/Qianjun_Xia-github-blue](https://github.com/Qianjun-Xia)
 
 He is currently pursuing a Master's Degree in Mechanical Engineering, at Columbia Engineering
 
@@ -14,6 +14,6 @@ Bachelor's Degrees in Mechanical Engineering an Applied Mathematics, Shanghai Ji
 #### Research Interests
 Soft Robotic,
 
-###Current learning
+### Current learning
 Applications of Artificial Intelligence in Robotics and Foundational Robotic Control Engineering
 
