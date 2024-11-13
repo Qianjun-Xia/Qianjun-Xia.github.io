@@ -1,6 +1,6 @@
 
 
-[![Qianjun-Xia](https://img.shields.io/badge/Qianjun_Xia-github-blue](https://github.com/Qianjun-Xia)
+[![Qianjun Xia](https://img.shields.io/badge/Qianjun_Xia-github-blue?logo=github)](https://github.com/Qianjun-Xia)
 
 He is currently pursuing a Master's Degree in Mechanical Engineering, at Columbia Engineering
 
