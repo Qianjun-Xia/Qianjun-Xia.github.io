@@ -1,16 +1,19 @@
 
 
-[![senli1073](https://img.shields.io/badge/senli1073-github-blue?logo=github)](https://github.com/senli1073)
+[![Qianjun-Xia](https://img.shields.io/badge/Qianjun-Xia-github-blue?logo=github)](https://github.com/Qianjun-Xia)
 
-He is currently pursuing a Master's Degree in Computer Science, at School of Computer Science and Technology, China University of Mining and Technology, China.
+He is currently pursuing a Master's Degree in Mechanical Engineering, at Columbia Engineering
 
 #### Email
-sli[at]cumt.edu.cn
+qx2253[at]columbia.edu
 
 #### Education
-M.E., Computer Science and Technology, China University of Mining and Technology, 2022—2025 (expected).\
-B.E., Data Science and Big Data Technology, China University of Mining and Technology, 2018—2022.
+Master's Degree in Mechanical Engineering, Columbia University, 2024—2025 (expected).\
+Bachelor's Degrees in Mechanical Engineering an Applied Mathematics, Shanghai Jiao Tong University, 2020-2024.
 
 #### Research Interests
-Deep Learning, Artificial Intelligence Seismology, Mine Microseismic.
+Soft Robotic,
+
+###Current learning
+Applications of Artificial Intelligence in Robotics and Foundational Robotic Control Engineering
 

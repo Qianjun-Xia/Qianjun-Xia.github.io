@@ -1,9 +1,3 @@
-- First-prize Academic Scholarship, 2023.
+- National Second Prize, China Mathematical Contest in Modeling
 
-- Freshman Academic Scholarship, 2022.
-
-- Excellent Graduation Project of Jiangsu Province, 2022.
-
-- First-prize Enterprise Scholarship, 2021.
-
-- First-prize Academic Scholarship, 2019.
+- Excellent Graduation Project of Shanghai Jiao Tong University, 2024
