@@ -24,10 +24,10 @@ repository               : "Qianjun-Xia/Qianjun-Xia.github.io"
 author:
   # Biographic information
   avatar           : "profile.png"
-  name             : "Your Sidebar Name"
+  name             : "Qianjun Xia"
   pronouns         : # example: "she/her"  
-  bio              : "Short biography for the left-hand sidebar"
-  location         : "Earth"
+  bio              : "Master student at Columbia University, [Creative Machines Lab](https://www.creativemachineslab.com/)"
+  location         : "New York, USA"
   employer         : "Columbia University"
   uri              : # URL
   email            : "qx2253@columbia.edu" 
