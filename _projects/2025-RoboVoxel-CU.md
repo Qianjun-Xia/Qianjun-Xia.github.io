@@ -1,7 +1,7 @@
 ---
 title: "RoboVoxel: Inferring Soft-Body Physics from Videos"
-collection: publications
-permalink: /publication/robovoxel
+collection: projects
+permalink: /projects/robovoxel/
 date: 2025-11-01
 venue: "Under review"
 ---
