@@ -2,7 +2,7 @@
 title: "RoboVoxel: Inferring Soft-Body Physics from Videos (Under Review)"
 collection: projects
 permalink: /projects/robovoxel/
-date: 2025-11-24
+# date: 2025-11-24
 # venue: "Under review"
 ---
 
