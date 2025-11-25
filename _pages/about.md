@@ -1,7 +1,9 @@
 ---
 layout: single
 title: "About Me"
-permalink: /about/
+permalink: /
+redirect_from:
+  - /about/
 author_profile: true
 ---
 Qianjun Xia is an M.S. student in Mechanical Engineering at Columbia University, concentrating on robotics and control. His current research in the Creative Machine Lab, advised by [Jiong Lin](https://jl6017.github.io/) and [Hod Lipson](https://www.hodlipson.com/), focuses on video-based parameter estimation for deformable objects & soft robotics and generative model in mechanism design.
@@ -43,7 +45,7 @@ Sept 2023 – Jul 2024
 - Worked on elastic–rod modeling, control, and simulation.
 
 **Columbia Creative Machines Lab – Soft-Body Parameter Identification**  
-Advisors: [Phd candidate. Jiong Lin](https://jl6017.github.io/), [Prof. Hod Lipson](https://www.hodlipson.com/)  
+Advisors: [Jiong Lin (PhD Candidate)](https://jl6017.github.io/), [Prof. Hod Lipson](https://www.hodlipson.com/)  
 Mar 2025 – Present  
 - Research on inferring material and actuator parameters of deformable bodies from video.  
 - Combines large-scale synthetic simulation with transformer-based video models.

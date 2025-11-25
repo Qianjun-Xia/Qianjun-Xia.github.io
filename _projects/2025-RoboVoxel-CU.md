@@ -1,12 +1,12 @@
 ---
-title: "RoboVoxel: Inferring Soft-Body Physics from Videos"
+title: "RoboVoxel: Inferring Soft-Body Physics from Videos (Under Review)"
 collection: projects
 permalink: /projects/robovoxel/
-date: 2025-11-01
-venue: "Under review"
+date: 2025-11-24
+# venue: "Under review"
 ---
 
-![RoboVoxel teaser](images/projects/RoboVoxel/head_image.png)
+![RoboVoxel teaser](/images/projects/RoboVoxel/head_image.png)
 
 **RoboVoxel** is a project on learning *voxel-level physical properties* and *actuator layouts* of soft bodies directly from short grayscale videos.  
 Instead of hand-tuning parameters in a simulator, we ask a model to infer them from motion, and then check whether those inferred parameters can re-generate similar behavior.
