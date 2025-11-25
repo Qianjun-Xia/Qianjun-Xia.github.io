@@ -9,7 +9,7 @@
 # Basic Site Settings
 locale                   : "en-US"
 site_theme               : "default" # Currently available options are "default", "air"
-title                    : "Qianjun Xia"
+title                    : "Qianjun Xia's Personal Website"
 title_separator          : "-"
 name                     : &name "Qianjun Xia"
 description              : &description "Research in Robotics, Computer Vision"   # Update this with a general description of your site, this is the default if not overridden by a page
@@ -230,6 +230,9 @@ collections:
   talks:
     output: true
     permalink: /:collection/:path/
+  projects:
+    output: true
+    permalink: /:collection/:path/
 
 
 # These settings control how pages and collections are included in the site
@@ -287,6 +290,16 @@ defaults:
       layout: talk
       author_profile: true
       share: true
+  # _projects
+  - scope:
+      path: ""
+      type: projects
+    values:
+      layout: single
+      author_profile: true
+      share: true
+
+
 
 
 # Sass/SCSS
