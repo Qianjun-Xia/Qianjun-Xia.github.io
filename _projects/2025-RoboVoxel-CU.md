@@ -6,7 +6,7 @@ permalink: /projects/robovoxel/
 # venue: "Under review"
 ---
 
-![RoboVoxel teaser](/images/projects/RoboVoxel/head_image.png)
+![RoboVoxel teaser](/images/projects/RoboVoxel/teaser.png)
 
 **RoboVoxel** is a project on learning *voxel-level physical properties* and *actuator layouts* of soft bodies directly from short grayscale videos.  
 Instead of hand-tuning parameters in a simulator, we ask a model to infer them from motion, and then check whether those inferred parameters can re-generate similar behavior.

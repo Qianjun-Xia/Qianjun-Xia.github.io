@@ -36,7 +36,7 @@ Jun 2023 – Sept 2023
 
 ---
 
-# Research Experience
+<!-- # Research Experience
 
 **Magnetic Wire-Guiding Robot for Minimally Invasive Surgery – SJTU**  
 Advisor: [Prof. Dong Wang](https://me.sjtu.edu.cn/en/FullTimeTeacher/wangdong1.html)  
@@ -48,4 +48,4 @@ Sept 2023 – Jul 2024
 Advisors: [Jiong Lin (PhD Candidate)](https://jl6017.github.io/), [Prof. Hod Lipson](https://www.hodlipson.com/)  
 Mar 2025 – Present  
 - Research on inferring material and actuator parameters of deformable bodies from video.  
-- Combines large-scale synthetic simulation with transformer-based video models.
+- Combines large-scale synthetic simulation with transformer-based video models. -->

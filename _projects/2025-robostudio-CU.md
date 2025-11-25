@@ -1,68 +1,40 @@
 ---
-title: "Robotics Studio Project: Inferring Soft-Body Physics from Videos (Under Review)"
+title: "(MECEE4611) Robotics Studio Course Project: A Bipedal Robot M.E.H (w/ Zizai Ma)"
 collection: projects
-permalink: /projects/robovoxel/
+permalink: /projects/robostudio/
 # date: 2025-11-24
 # venue: "Under review"
 ---
 
-![RoboVoxel teaser](/images/projects/RoboVoxel/head_image.png)
+![RoboticStudio teaser](/images/projects/RoboticStudio/teaser.png)
 
-**RoboVoxel** is a project on learning *voxel-level physical properties* and *actuator layouts* of soft bodies directly from short grayscale videos.  
-Instead of hand-tuning parameters in a simulator, we ask a model to infer them from motion, and then check whether those inferred parameters can re-generate similar behavior.
+This project was completed as part of the MECEE4611 Robotics Studio course in Spring 2025, taught by Prof. Hod Lipson.
+Together with Zizai Ma, we developed a bipedal robotic prototype named M.E.H, integrating custom mechanical design, embedded hardware and motion control.
 
----
+In our collaboration, Zizai Ma led the mechanical design, fabrication, and hardware integration, while I was primarily responsible for control algorithms, gait planning, inverse kinematics, and the overall software architecture.
+Through iterative design and testing, our robot achieved a maximum walking speed of approximately 32 cm/s on flat ground, demonstrating the effectiveness of the motion controller under lightweight hardware and low-cost actuation constraints.
 
-## Motivation
+**Robot inverse kinematics analysis**
+<!-- ![Inverse Kinematics GIF](/images/projects/RoboticStudio/ik.gif) -->
+<table>
+<tr>
+<td style="width:50%; text-align:center;">
+    <img src="/images/projects/RoboticStudio/leg.jpg" width="95%"/>
+</td>
+<td style="width:50%; text-align:center;">
+    <img src="/images/projects/RoboticStudio/ik.gif" width="95%"/>
+</td>
+</tr>
+</table>
 
-Rigid robots usually come with clean CAD models and well-documented masses, inertias, and joint limits.  
-Soft robots and deformable objects are very different:
 
-- material properties can **vary across space**,  
-- large deformations and contacts are common,  
-- actuators may be **embedded** and not directly observable.
+**Robot walking in real experiments**
+<iframe width="560" height="315"
+    src="https://www.youtube.com/embed/LupJhmmK-0E"
+    title="YouTube video player"
+    frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen>
+</iframe>
 
-RoboVoxel explores the question:
 
-> Given a short video of a deformable body moving, can we guess the underlying material field and actuator placement well enough to reproduce its motion in simulation?
-
----
-
-## Core Idea
-
-We reinterpret **system identification** as a kind of **video-to-image translation**:
-
-- **Input**: a short grayscale video of a soft object or robot.  
-- **Output**: a single “parameter image”, where each pixel corresponds to a voxel in the simulator and each color channel encodes some physical quantity (e.g., stiffness, mass, damping, actuator direction/strength).
-
-This parameter image is then used as the input to a spring–mass simulator.  
-If the video rolled out by the simulator matches the original one, the inferred parameters are likely meaningful.
-
-In short:
-
-> from gray motion → to colored physics → back to motion.
-
----
-
-## Method (High-Level)
-
-<!-- ![Pipeline](images/robovoxel_pipeline.png) -->
-
-The pipeline has three main pieces:
-
-1. **Synthetic dataset with a modified simulator**  
-   - We build on a 2D spring–mass environment inspired by Evolution Gym.  
-   - For many random beams, blobs, and soft robots, we generate:
-     - a **grayscale motion sequence**, and  
-     - a **color parameter image** (used inside the simulator).  
-
-2. **Image decoder for parameter fields**  
-   - We train a convolutional autoencoding model (e.g., VAE-style) purely on parameter images.  
-   - After training, we **freeze the decoder** so that it becomes a “renderer” from a low-dimensional latent vector to a full-resolution parameter field.
-
-3. **Video transformer for inference from motion**  
-   - A video transformer (TimeSformer-style architecture) consumes the grayscale frames.  
-   - It outputs a latent vector that is fed into the frozen decoder, producing the predicted parameter image.  
-   - The model is trained with reconstruction losses on these parameter images.
-
-To use the prediction for simulation, we optionally cluster or discretize the output values to obtain a set of material / actuator types, then run the simula
