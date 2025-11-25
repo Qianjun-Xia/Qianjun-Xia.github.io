@@ -18,7 +18,7 @@ His broader interests lie in robot learning, physics-based simulation and 3D com
 
 **Columbia University**  
 M.S., Mechanical Engineering (Robotics and Control)  
-Sep 2024 – Present  GPA: 4.12/4.3  
+Sep 2024 – Present  GPA: 4.12/4.0  
 
 **Shanghai Jiao Tong University**  
 B.S., Mechanical Engineering; Double Major in Mathematics and Applied Mathematics  
