@@ -17,7 +17,7 @@ redirect_from:
     style="border: none;">
 </iframe> -->
 <iframe
-    src="https://docs.google.com/gview?embedded=true&url=https://qianjun-xia.github.io/files/CV_Qianjun_Xia.pdf"
+    src="https://docs.google.com/gview?embedded=true&url=https://qianjun-xia.github.io/files/Curriculum_Vitae_Qianjun_XIA.pdf"
     style="width:100%; height:900px; border:0;">
 </iframe>
 
