@@ -33,7 +33,7 @@ RoboVoxel explores the question:
 We reinterpret **system identification** as a kind of **video-to-image translation**:
 
 - **Input**: a short grayscale video of a soft object or robot.  
-- **Output**: a single “parameter image”, where each pixel corresponds to a voxel in the simulator and each color channel encodes some physical quantity (e.g., stiffness, mass, damping, actuator direction/strength).
+- **Output**: a single “parameter image”, where each pixel corresponds to a voxel in the simulator and each color channel encodes some physical quantity (e.g., stiffness, mass, damping, actuator direction).
 
 This parameter image is then used as the input to a spring–mass simulator.  
 If the video rolled out by the simulator matches the original one, the inferred parameters are likely meaningful.
@@ -51,7 +51,7 @@ In short:
 The pipeline has three main pieces:
 
 1. **Synthetic dataset with a modified simulator**  
-   - We build on a 2D spring–mass environment inspired by Evolution Gym.  
+   - We modified a 2D spring–mass environment based on Evolution Gym.  
    - For many random beams, blobs, and soft robots, we generate:
      - a **grayscale motion sequence**, and  
      - a **color parameter image** (used inside the simulator).  
@@ -65,4 +65,4 @@ The pipeline has three main pieces:
    - It outputs a latent vector that is fed into the frozen decoder, producing the predicted parameter image.  
    - The model is trained with reconstruction losses on these parameter images.
 
-To use the prediction for simulation, we optionally cluster or discretize the output values to obtain a set of material / actuator types, then run the simula
+To use the prediction for simulation, we optionally cluster or discretize the output values to obtain a set of material / actuator types, then run the simulation.

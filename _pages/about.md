@@ -6,7 +6,7 @@ redirect_from:
   - /about/
 author_profile: true
 ---
-Qianjun Xia is an M.S. student in Mechanical Engineering(Research Track) at Columbia University, concentrating on robotics and control. His current research in the [Creative Machine Lab](https://www.creativemachineslab.com/), advised by [Jiong Lin](https://jl6017.github.io/) and [Hod Lipson](https://www.hodlipson.com/), focuses on video-based parameter estimation for deformable objects & soft robotics and generative model in mechanism design.
+Qianjun Xia is an M.S. student in Mechanical Engineering (Research Track) at Columbia University, concentrating on robotics and control. His current research in the [Creative Machine Lab](https://www.creativemachineslab.com/), advised by [Jiong Lin](https://jl6017.github.io/) and [Hod Lipson](https://www.hodlipson.com/), focuses on video-based parameter estimation for deformable objects & soft robotics and generative model in mechanism design.
 
 Before coming to Columbia, Qianjun earned his Bachelor’s degree in Mechanical Engineering at Shanghai Jiao Tong University (SJTU), where he was advised by [Prof. Dong Wang](https://me.sjtu.edu.cn/en/FullTimeTeacher/wangdong1.html). He worked on magnetic-wire-guiding robots for minimally invasive surgery involving mechanical design, control, and elastic–rod modeling.
 
