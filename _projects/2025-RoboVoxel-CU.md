@@ -66,3 +66,19 @@ The pipeline has three main pieces:
    - The model is trained with reconstruction losses on these parameter images.
 
 To use the prediction for simulation, we optionally cluster or discretize the output values to obtain a set of material / actuator types, then run the simulation.
+
+<div style="flex: 1; text-align: center;">
+   <img src="/images/projects/RoboVoxel/beam_output.gif" 
+      alt="Simulation GIF"
+      style="max-width: 200%; height: auto; border-radius: 6px;">
+</div>
+<div style="flex: 1; text-align: center;">
+   <img src="/images/projects/RoboVoxel/blob_output.gif" 
+      alt="Simulation GIF"
+      style="max-width: 200%; height: auto; border-radius: 6px;">
+</div>
+<div style="flex: 1; text-align: center;">
+   <img src="/images/projects/RoboVoxel/robot_output.gif" 
+      alt="Simulation GIF"
+      style="max-width: 200%; height: auto; border-radius: 6px;">
+</div>
