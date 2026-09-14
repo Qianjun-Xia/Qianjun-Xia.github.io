@@ -6,7 +6,7 @@ permalink: /projects/hollowknight/
 # venue: "Under review"
 ---
 
-![HollowKnight teaser](/images/projects/HollowKnight/teaser.png)
+![HollowKnight teaser](/images/projects/HollowKnight/teaser.webp)
 
 ## Overview
 

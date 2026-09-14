@@ -5,7 +5,7 @@ permalink: /projects/magnetic_wire/
 # date: 2025-11-24
 # venue: "Under review"
 ---
-![Magnetic_wire teaser](/images/projects/MagneticWire/teaser.png)
+![Magnetic_wire teaser](/images/projects/MagneticWire/teaser.webp)
 
 ### Overview
 
