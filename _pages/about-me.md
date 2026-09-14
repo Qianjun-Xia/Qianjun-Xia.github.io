@@ -5,15 +5,24 @@ tagline: "Who I am and where I have been."
 permalink: /about/
 ---
 
-I am a Master's student in Mechanical Engineering (Research Track) at **Columbia
-University**, concentrating on robotics and control. In the
-[Creative Machines Lab](https://www.creativemachineslab.com/), advised by
-[Jiong Lin](https://jl6017.github.io/) and [Hod Lipson](https://www.hodlipson.com/),
-I work on recovering physics from video and putting it back into machines that move.
+I am a Ph.D. student in **Computer Science** at the **University of British
+Columbia**, in the PhysAI Lab, supervised by
+[Prof. Peter Yichen Chen](https://peterchencyc.com/). The lab builds simulators
+of the 3D physical world to make physical AI possible — which is the question I
+had been circling from the hardware side, and now get to work on directly.
 
-Before Columbia I earned my Bachelor's degree at **Shanghai Jiao Tong University**,
-advised by [Prof. Dong Wang](https://me.sjtu.edu.cn/en/FullTimeTeacher/wangdong1.html),
-where I built magnetic wire-guiding robots for minimally invasive surgery.
+Before UBC I took my Master's in Mechanical Engineering at **Columbia
+University**, in the
+[Creative Machines Lab](https://www.creativemachineslab.com/) with
+[Jiong Lin](https://jl6017.github.io/) and
+[Prof. Hod Lipson](https://www.hodlipson.com/), on recovering physical
+parameters of deformable bodies from video. Before that I built magnetic
+wire-guiding robots for minimally invasive surgery at **Shanghai Jiao Tong
+University**, advised by
+[Prof. Dong Wang](https://me.sjtu.edu.cn/en/FullTimeTeacher/wangdong1.html).
+
+The through-line is the same either way: getting physics out of the world
+accurately enough that a machine can act on it.
 
 ## Education
 

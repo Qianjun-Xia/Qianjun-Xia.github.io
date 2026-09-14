@@ -50,9 +50,12 @@
   "email": {{ site.author.email | jsonify }},
   "url": {{ site.url | jsonify }},
   "image": {{ "/images/profile.webp" | absolute_url | jsonify }},
-  "jobTitle": "M.S. Student, Mechanical Engineering",
-  "affiliation": { "@type": "Organization", "name": "Columbia University" },
-  "alumniOf": { "@type": "Organization", "name": "Shanghai Jiao Tong University" },
+  "jobTitle": "PhD Student, Computer Science",
+  "affiliation": { "@type": "Organization", "name": "University of British Columbia" },
+  "alumniOf": [
+    { "@type": "Organization", "name": "Columbia University" },
+    { "@type": "Organization", "name": "Shanghai Jiao Tong University" }
+  ],
   "sameAs": [{% if site.author.github %}{{ "https://github.com/" | append: site.author.github | jsonify }}{% endif %}{% if site.author.linkedin %}, {{ "https://www.linkedin.com/in/" | append: site.author.linkedin | jsonify }}{% endif %}{% if site.author.googlescholar %}, {{ site.author.googlescholar | jsonify }}{% endif %}]
 }
 </script>
