@@ -1,0 +1,29 @@
+---
+layout: page
+title: "Publications"
+tagline: "Papers, preprints and work in submission."
+permalink: /publications/
+wide: true
+---
+
+{% assign pubs = site.publications %}
+{% assign groups = "published,under-review,preprint,in-preparation" | split: "," %}
+{% assign labels = "Published,Under Review,Preprints,In Preparation" | split: "," %}
+
+{% if pubs == nil or pubs.size == 0 %}
+  <p class="empty-note">Nothing listed here yet — in-progress work is described on the
+  <a href="/projects/">projects</a> page.</p>
+{% else %}
+  {% assign pubs = pubs | sort: "date" | reverse %}
+  {% for g in groups %}
+    {% assign inGroup = pubs | where: "status", g %}
+    {% if inGroup.size > 0 %}
+      <section class="pub-group">
+        <h2 class="pub-group__title">{{ labels[forloop.index0] }}</h2>
+        <div class="pub-list">
+          {% for item in inGroup %}{% include publication-item.html item=item %}{% endfor %}
+        </div>
+      </section>
+    {% endif %}
+  {% endfor %}
+{% endif %}

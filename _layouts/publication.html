@@ -1,0 +1,43 @@
+---
+layout: classic
+---
+{%- assign me = site.author.name -%}
+{%- assign me_bold = me | prepend: '<strong>' | append: '</strong>' -%}
+<div class="wrap page-head">
+  <a class="back-link" href="{{ '/publications/' | relative_url }}">
+    <svg aria-hidden="true"><use href="#i-arrow-left"></use></svg>All publications
+  </a>
+
+  <h1 class="page-head__title">{{ page.title }}</h1>
+  {%- if page.authors %}<p class="page-head__tagline">{{ page.authors | replace: me, me_bold }}</p>{%- endif %}
+
+  <div class="page-head__meta">
+    {%- if page.status_label %}<span class="chip chip--status">{{ page.status_label }}</span>{%- endif %}
+    {%- if page.venue %}<span class="chip">{{ page.venue }}</span>{%- endif %}
+    {%- if page.year %}<span class="chip">{{ page.year }}</span>{%- endif %}
+  </div>
+
+  <div class="page-head__meta">
+    {%- if page.paperurl %}<a class="btn" href="{{ page.paperurl }}"><svg aria-hidden="true"><use href="#i-doc"></use></svg>PDF</a>{%- endif %}
+    {%- if page.arxiv %}<a class="btn btn--ghost" href="{{ page.arxiv }}">arXiv</a>{%- endif %}
+    {%- if page.code %}<a class="btn btn--ghost" href="{{ page.code }}">Code</a>{%- endif %}
+    {%- if page.project %}<a class="btn btn--ghost" href="{{ page.project | relative_url }}">Project page</a>{%- endif %}
+  </div>
+</div>
+
+<div class="wrap">
+  {%- if page.teaser %}
+  <img class="hero-figure" src="{{ page.teaser | relative_url }}" alt="{{ page.title }}">
+  {%- endif %}
+
+  <article class="prose prose--wide">
+    {{ content }}
+  </article>
+
+  {%- if page.citation %}
+  <div class="prose prose--wide">
+    <h2>Citation</h2>
+    <pre><code>{{ page.citation }}</code></pre>
+  </div>
+  {%- endif %}
+</div>

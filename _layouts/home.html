@@ -40,6 +40,26 @@ layout: classic
   </div>
 </section>
 
+{%- assign pubs = site.publications -%}
+{%- if pubs and pubs.size > 0 %}
+{%- assign pubs = pubs | sort: "date" | reverse -%}
+<section class="wrap section" id="publications">
+  <div class="section__head">
+    <div>
+      <span class="section__kicker">Research output</span>
+      <h2 class="section__title">Publications</h2>
+    </div>
+    <a class="section__link" href="{{ '/publications/' | relative_url }}">All publications</a>
+  </div>
+
+  <div class="pub-list">
+    {%- for item in pubs limit: 3 %}
+      {% include publication-item.html item=item %}
+    {%- endfor %}
+  </div>
+</section>
+{%- endif %}
+
 <section class="wrap section" id="projects">
   <div class="section__head">
     <div>

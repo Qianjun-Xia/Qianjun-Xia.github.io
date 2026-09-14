@@ -1,0 +1,42 @@
+{%- comment -%}
+Expects `item` — one entry from site.publications.
+The site owner's name is bolded inside the author list so a reader can find
+it at a glance in a long list.
+{%- endcomment -%}
+{%- assign me = site.author.name -%}
+{%- assign me_bold = me | prepend: '<strong>' | append: '</strong>' -%}
+<article class="pub">
+  {%- if item.teaser %}
+  <a class="pub__thumb" href="{{ item.url | relative_url }}">
+    <img src="{{ item.teaser | relative_url }}" alt="" loading="lazy" decoding="async">
+  </a>
+  {%- endif %}
+
+  <div class="pub__body">
+    <h3 class="pub__title">
+      <a href="{{ item.url | relative_url }}">{{ item.title }}</a>
+    </h3>
+
+    {%- if item.authors %}
+    <p class="pub__authors">{{ item.authors | replace: me, me_bold }}</p>
+    {%- endif %}
+
+    {%- if item.venue or item.year %}
+    <p class="pub__venue">
+      {%- if item.venue %}<em>{{ item.venue }}</em>{% endif -%}
+      {%- if item.venue and item.year %} · {% endif -%}
+      {%- if item.year %}{{ item.year }}{% endif -%}
+    </p>
+    {%- endif %}
+
+    <div class="pub__links">
+      {%- if item.status_label %}<span class="chip chip--status">{{ item.status_label }}</span>{%- endif %}
+      {%- if item.paperurl %}<a href="{{ item.paperurl }}">PDF</a>{%- endif %}
+      {%- if item.arxiv %}<a href="{{ item.arxiv }}">arXiv</a>{%- endif %}
+      {%- if item.code %}<a href="{{ item.code }}">Code</a>{%- endif %}
+      {%- if item.video %}<a href="{{ item.video }}">Video</a>{%- endif %}
+      {%- if item.project %}<a href="{{ item.project | relative_url }}">Project page</a>{%- endif %}
+      {%- if item.bibtex %}<a href="{{ item.bibtex | relative_url }}">BibTeX</a>{%- endif %}
+    </div>
+  </div>
+</article>
