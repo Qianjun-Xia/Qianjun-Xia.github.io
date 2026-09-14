@@ -6,8 +6,13 @@
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
     {% include icons.html %}
-    {% include drops.html %}
+    {%- comment -%}
+    The click-to-drop toy is opt-in per page, via `drops: true` in front
+    matter. It runs on the landing page only: on a page someone is reading,
+    props landing across the text are in the way rather than a welcome.
+    {%- endcomment -%}
+    {%- if page.drops %}{% include drops.html %}{% endif %}
     {{ content }}
-    <script src="{{ '/assets/js/drop.js' | relative_url }}" defer></script>
+    {%- if page.drops %}<script src="{{ '/assets/js/drop.js' | relative_url }}" defer></script>{% endif %}
   </body>
 </html>
