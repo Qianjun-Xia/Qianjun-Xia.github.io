@@ -12,43 +12,43 @@ affiliation: "Columbia University"
 excerpt: "RL agents that learn navigation, combat and evasion in Hollow Knight and Silksong from raw pixels plus game-state variables, drawing on STORM-style Transformer world models and latent imagination."
 role: "State representation, world-model training, evaluation"
 tech: [Reinforcement Learning, World Models, Transformers, Categorical VAE]
-spire:
-  type: enemy
-  rarity: uncommon
-  cost: 1
-  card_type: attack
-  flavor: "No cost too great. Learn the boss pattern."
----
-## Overview
-
-This project investigates the development of reinforcement learning (RL) agents for the challenging action-platformer games **Hollow Knight** and **Silksong**. We explore whether improved performance, robustness, and training efficiency can be achieved through refined state representations and modern RL architectures.
-
-Our objective is to design agents capable of learning navigation, combat, and evasion behaviors directly from **raw pixel observations** and **game-state variables** such as player health and boss health.
-
 ---
 
-## Technical Approach
+**Hollow Knight** and **Silksong** are hard for an agent in a specific way:
+success needs long-horizon reasoning about a boss's attack pattern, from nothing
+but the pixels on screen. Reward is sparse, episodes are long, and a mistake ends
+the run.
 
-We draw inspiration from **model-based reinforcement learning (MBRL)**—particularly from [**STORM**](https://proceedings.neurips.cc/paper_files/paper/2023/hash/5647763d4245b23e6a1cb0a8947b38c9-Abstract-Conference.html), a stochastic Transformer-based architecture that represents images using categorical VAEs and predicts future dynamics in latent space.  
-STORM demonstrates how **latent imagination**, **Transformer sequence modeling**, and **stochastic world representations** can significantly improve sample efficiency and long-horizon reasoning.  
+The agents here learn navigation, combat and evasion from **raw pixel
+observations** plus a handful of game-state variables — player health, boss
+health. The question we set out to answer was whether better state
+representations and modern architectures buy performance, robustness and sample
+efficiency on a game this unforgiving.
 
----
+## Approach
 
-## Outcomes
+The work builds on **model-based RL**, and specifically on
+[STORM](https://proceedings.neurips.cc/paper_files/paper/2023/hash/5647763d4245b23e6a1cb0a8947b38c9-Abstract-Conference.html)
+— a stochastic Transformer world model that encodes frames with a categorical VAE
+and predicts future dynamics in latent space.
 
-<iframe width="560" height="315"
-    src="https://www.youtube.com/embed/Amnv1mkn3vo"
-    title="YouTube video player"
-    frameborder="0"
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-    allowfullscreen>
-</iframe>
+Three things in that design matter for a game like this. **Latent imagination**
+lets the agent practise inside its own model instead of burning real episodes.
+**Transformer sequence modeling** carries context far enough back to cover a boss
+cycle. And a **stochastic world representation** leaves room for an environment
+that does not repeat itself exactly.
 
----
+## Outcome
 
-**Reference**
+{% include youtube.html id="Amnv1mkn3vo" caption="The trained agent in combat." %}
 
-Zhang, W., Wang, G., Sun, J., Yuan, Y., & Huang, G. (2023).  
-*STORM: Efficient Stochastic Transformer based World Models for Reinforcement Learning.*  
-Advances in Neural Information Processing Systems (NeurIPS 2023).  
+## My contribution
+
+State representation, world-model training, and evaluation.
+
+## Reference
+
+Zhang, W., Wang, G., Sun, J., Yuan, Y., & Huang, G. (2023).
+*STORM: Efficient Stochastic Transformer based World Models for Reinforcement
+Learning.* Advances in Neural Information Processing Systems (NeurIPS 2023).
 [PDF](https://proceedings.neurips.cc/paper_files/paper/2023/file/5647763d4245b23e6a1cb0a8947b38c9-Paper-Conference.pdf)

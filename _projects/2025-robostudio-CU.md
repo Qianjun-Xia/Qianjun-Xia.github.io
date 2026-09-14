@@ -14,38 +14,41 @@ collaborators: "Zizai Ma"
 excerpt: "A bipedal prototype reaching ~32 cm/s on flat ground under lightweight hardware and low-cost actuation. I owned the control side — gait planning, inverse kinematics, and the software architecture."
 role: "Control algorithms, gait planning, inverse kinematics, software architecture"
 tech: [Inverse Kinematics, Gait Planning, Embedded Control, CAD]
-spire:
-  type: elite
-  rarity: uncommon
-  cost: 2
-  card_type: attack
-  flavor: "Two legs. Thirty-two centimeters a second."
 ---
-This project was completed as part of the MECEE4611 Robotics Studio course in Spring 2025, taught by Prof. Hod Lipson.
-Together with Zizai Ma, we developed a bipedal robotic prototype named M.E.H, integrating custom mechanical design, embedded hardware and motion control.
 
-In our collaboration, Zizai Ma led the mechanical design, fabrication, and hardware integration, while I was primarily responsible for control algorithms, gait planning, inverse kinematics, and the overall software architecture.
-Through iterative design and testing, our robot achieved a maximum walking speed of approximately 32 cm/s on flat ground, demonstrating the effectiveness of the motion controller under lightweight hardware and low-cost actuation constraints.
+**M.E.H** is a bipedal robot built from nothing for MECEE4611 Robotics Studio,
+Spring 2025, with Zizai Ma under Prof. Hod Lipson. Custom
+mechanical design, embedded hardware, and a motion controller that had to work
+within both.
 
-**Robot inverse kinematics analysis**
-<!-- ![Inverse Kinematics GIF](/images/projects/RoboticStudio/ik.webp) -->
-<table>
-<tr>
-<td style="width:50%; text-align:center;">
-    <img src="/images/projects/RoboticStudio/leg.webp" width="95%"/>
-</td>
-<td style="width:50%; text-align:center;">
-    <img src="/images/projects/RoboticStudio/ik.webp" width="95%"/>
-</td>
-</tr>
-</table>
+It walks at about **32 cm/s** on flat ground — on lightweight parts and cheap
+actuators, which is the constraint that made the controller interesting.
 
+Zizai led mechanical design, fabrication and hardware integration. I took the
+control side: gait planning, inverse kinematics, and the software architecture
+tying them together.
 
-**Robot walking in real experiments**
-<iframe width="560" height="315"
-    src="https://www.youtube.com/embed/LupJhmmK-0E"
-    title="YouTube video player"
-    frameborder="0"
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-    allowfullscreen>
-</iframe>
+## Legs and inverse kinematics
+
+The leg linkage sets what the controller can ask for. Solving its inverse
+kinematics gives the joint angles for a desired foot position, and the reachable
+workspace tells the gait planner where it is allowed to put a foot down.
+
+{% include figures.html
+   a="/images/projects/RoboticStudio/leg.webp" a_alt="The physical leg linkage"
+   b="/images/projects/RoboticStudio/ik.webp" b_alt="Inverse kinematics solution sweeping the leg workspace"
+   caption="The leg as built, and the inverse-kinematics solution sweeping its workspace." %}
+
+## Walking
+
+Iterating between gait parameters and what the hardware would tolerate is most of
+what turned a standing frame into a walking one. Low-cost actuators have backlash
+and limited torque, so the gait had to stay inside what they could actually
+deliver rather than what a simulator would allow.
+
+{% include youtube.html id="LupJhmmK-0E" caption="M.E.H walking on flat ground." %}
+
+## My contribution
+
+Control algorithms, gait planning, the inverse-kinematics solver, and the overall
+software architecture.
