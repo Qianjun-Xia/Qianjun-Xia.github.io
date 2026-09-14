@@ -1,0 +1,1072 @@
+<title>Gorilla Cleanup</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{color-scheme:light;
+  --ground:#f6efd8;--panel:#fbf6e7;--edge:#e4d8b6;
+  --ink:#453718;--soft:#7e6d42;--accent:#b0802a;
+  --display:"Fredoka",system-ui,sans-serif;--body:"Nunito",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,monospace;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body)}
+.surface{position:relative;min-height:100vh;display:grid;place-items:center;padding:40px 20px;text-align:center}
+.surface::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  background-image:repeating-linear-gradient(45deg,var(--soft) 0 1px,transparent 1px 9px),
+                   repeating-linear-gradient(-45deg,var(--soft) 0 1px,transparent 1px 9px);opacity:.08}
+.surface>*{position:relative;z-index:1}
+.land__in{max-width:34rem;margin-inline:auto}
+.land__art{width:min(100%,20rem);margin:0 auto 2.5rem}
+.land__art svg{width:100%;height:auto;display:block}
+.land__name{font-family:var(--display);font-size:clamp(3rem,1.6rem + 6.6vw,6rem);font-weight:700;
+  line-height:.92;letter-spacing:-.025em;margin:0 0 .75rem}
+.land__tag{font-family:var(--display);font-size:clamp(1.2rem,1.1rem + .45vw,1.45rem);
+  font-weight:500;color:var(--soft);margin:0 0 2.5rem}
+.land__nav ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;counter-reset:n}
+.land__nav li{counter-increment:n}
+.land__nav a{display:flex;align-items:baseline;gap:.75rem;font-family:var(--display);
+  font-size:clamp(1.2rem,1.1rem + .45vw,1.45rem);font-weight:600;color:var(--ink);
+  text-decoration:none;padding:.55rem 1rem;border-radius:12px;transition:background .18s,translate .18s}
+.land__nav a::before{content:counter(n,decimal-leading-zero);font-family:var(--mono);font-size:.66rem;
+  font-weight:500;letter-spacing:.1em;color:var(--accent);flex:none;width:1.9rem;text-align:left}
+.land__nav a:hover{background:var(--panel);translate:0 -1px}
+.land__foot{margin-top:2.5rem;font-family:var(--mono);font-size:.68rem;letter-spacing:.11em;color:var(--soft)}
+.drop-stage{position:fixed;inset:0;z-index:30;pointer-events:none;overflow:hidden}
+.drop-prop{position:absolute;top:0;left:0;will-change:transform}
+.drop-prop svg{width:100%;height:100%;display:block}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+.fill{position:fixed;top:14px;right:14px;z-index:60;font-family:var(--display);font-weight:600;
+  font-size:.8rem;padding:.5rem 1rem;border-radius:999px;cursor:pointer;
+  border:1.5px solid var(--ink);background:var(--ink);color:var(--panel)}
+.fill:hover{background:var(--soft);border-color:var(--soft)}
+.note{position:fixed;bottom:12px;left:14px;z-index:60;font-family:var(--mono);font-size:.62rem;
+  letter-spacing:.08em;color:var(--soft);max-width:22rem;line-height:1.7;text-align:left}
+
+.gor {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 150px;
+  z-index: 2;
+  pointer-events: none;
+  transform-origin: 50% 100%;
+  will-change: transform;
+}
+
+.gor__svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+.gor-fur {
+  fill: var(--ink);
+}
+
+.gor-skin {
+  fill: var(--accent);
+  opacity: 0.55;
+}
+
+.gor-ear-in {
+  opacity: 0.75;
+}
+
+.gor-foot {
+  fill: var(--ink);
+}
+
+.gor-arm {
+  stroke: var(--ink);
+  fill: var(--ink);
+  transform-box: view-box;
+}
+
+.gor-arm--l {
+  transform-origin: 36px 80px;
+}
+
+.gor-arm--r {
+  transform-origin: 84px 80px;
+}
+
+.gor-brow {
+  stroke: var(--panel);
+  opacity: 0.5;
+}
+
+.gor-eye {
+  fill: var(--panel);
+}
+
+.gor-pupil,
+.gor-nostril {
+  fill: var(--ink);
+}
+
+.gor-maw {
+  
+  
+  fill: var(--ink);
+  stroke: var(--accent);
+  stroke-width: 2.5;
+}
+
+.gor-tongue {
+  fill: var(--accent);
+  opacity: 0;
+  transform-box: view-box;
+  transform-origin: 60px 69px;
+  transform: scale(0.2);
+}
+
+.gor-mouth,
+.gor-muzzle,
+.gor-torso,
+.gor-head {
+  transform-box: view-box;
+}
+
+.gor-muzzle {
+  transform-origin: 60px 30px;
+}
+
+.gor-mouth {
+  transform-origin: 60px 65px;
+}
+
+.gor-torso {
+  transform-origin: 60px 118px;
+}
+
+.gor-head {
+  transform-origin: 60px 74px;
+}
+
+.gor.is-hopping {
+  animation: gor-hop 900ms cubic-bezier(0.3, 0.9, 0.4, 1) forwards;
+}
+
+@keyframes gor-hop {
+  0%   { transform: translate(-50%, 130%) scale(0.8); }
+  30%  { transform: translate(-50%, -18%) scale(1.04); }
+  46%  { transform: translate(-50%, 4%) scale(0.94); }
+  66%  { transform: translate(-50%, -12%) scale(1.02); }
+  82%  { transform: translate(-50%, 2%) scale(0.97); }
+  100% { transform: translate(-50%, 0) scale(1); }
+}
+
+.gor.is-beating {
+  transform: translate(-50%, 0);
+  animation: gor-brace 1200ms ease-in-out;
+}
+
+.gor.is-beating .gor-arm--l {
+  animation: gor-thump-l 400ms ease-in-out 3;
+}
+
+.gor.is-beating .gor-arm--r {
+  animation: gor-thump-r 400ms ease-in-out 3;
+}
+
+.gor.is-beating .gor-torso {
+  animation: gor-puff 400ms ease-in-out 3;
+}
+
+@keyframes gor-brace {
+  0%, 100% { transform: translate(-50%, 0) rotate(0deg); }
+  25%      { transform: translate(-50%, -3%) rotate(-2deg); }
+  75%      { transform: translate(-50%, -3%) rotate(2deg); }
+}
+
+@keyframes gor-thump-l {
+  0%, 100% { transform: rotate(0deg); }
+  40%      { transform: rotate(-38deg); }
+  60%      { transform: rotate(-30deg); }
+}
+
+@keyframes gor-thump-r {
+  0%, 100% { transform: rotate(0deg); }
+  40%      { transform: rotate(38deg); }
+  60%      { transform: rotate(30deg); }
+}
+
+@keyframes gor-puff {
+  0%, 100% { transform: scale(1, 1); }
+  45%      { transform: scale(1.07, 0.95); }
+}
+
+.gor.is-sucking {
+  transform: translate(-50%, 0);
+  animation: gor-heave 380ms ease-in-out infinite;
+}
+
+.gor.is-sucking .gor-mouth {
+  animation:
+    gor-gape 520ms cubic-bezier(0.34, 1.7, 0.5, 1) forwards,
+    gor-breathe 760ms ease-in-out 520ms infinite;
+}
+
+.gor.is-sucking .gor-muzzle {
+  animation: gor-jaw 520ms cubic-bezier(0.34, 1.5, 0.5, 1) forwards;
+}
+
+.gor.is-sucking .gor-tongue {
+  animation: gor-tongue-out 420ms cubic-bezier(0.34, 1.6, 0.5, 1) 220ms forwards;
+}
+
+.gor.is-sucking .gor-head {
+  animation: gor-tilt 520ms cubic-bezier(0.34, 1.5, 0.5, 1) forwards;
+}
+
+.gor.is-sucking .gor-arm--l {
+  transform: rotate(-58deg);
+}
+
+.gor.is-sucking .gor-arm--r {
+  transform: rotate(58deg);
+}
+
+@keyframes gor-jaw {
+  0%   { transform: scaleY(1); }
+  18%  { transform: scaleY(0.96); }         
+  55%  { transform: scaleY(1.24); }
+  100% { transform: scaleY(1.18); }
+}
+
+@keyframes gor-gape {
+  0%   { transform: scale(1, 1); }
+  18%  { transform: scale(0.72, 0.6); }     
+  55%  { transform: scale(1.36, 4.4); }     
+  75%  { transform: scale(1.18, 3.6); }
+  100% { transform: scale(1.25, 3.9); }     
+}
+
+@keyframes gor-breathe {
+  0%, 100% { transform: scale(1.25, 3.9); }
+  45%      { transform: scale(1.34, 4.25); }
+}
+
+@keyframes gor-tongue-out {
+  0%   { opacity: 0; transform: scale(0.2) translateY(-6px); }
+  70%  { opacity: 1; transform: scale(1.12) translateY(1px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes gor-tilt {
+  0%   { transform: translateY(0) scale(1); }
+  18%  { transform: translateY(1.5px) scale(0.98); }   
+  100% { transform: translateY(-3px) scale(1.05); }
+}
+
+@keyframes gor-heave {
+  0%, 100% { transform: translate(-50%, 0) scale(1, 1); }
+  50%      { transform: translate(-50%, -1%) scale(1.02, 0.99); }
+}
+
+.gor.is-leaving {
+  animation: gor-leave 700ms cubic-bezier(0.5, 0, 0.8, 0.4) forwards;
+}
+
+@keyframes gor-leave {
+  0%   { transform: translate(-50%, 0) scale(1); }
+  22%  { transform: translate(-50%, -24%) scale(1.06); }
+  100% { transform: translate(-50%, 135%) scale(0.82); }
+}
+
+.drop-prop.is-eaten {
+  opacity: 0;
+  scale: 0.25;
+  transition: opacity 0.22s ease-in, scale 0.22s ease-in;
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <!-- ---------- from the bench ---------- -->
+
+    <symbol id="d-nut" viewBox="0 0 44 44">
+      <path d="M40 22 31 37.6H13L4 22 13 6.4h18z" fill="var(--panel)" stroke="var(--ink)" stroke-width="3.6" stroke-linejoin="round"/>
+      <circle cx="22" cy="22" r="7.5" fill="var(--accent)" fill-opacity=".35" stroke="var(--ink)" stroke-width="3.2"/>
+    </symbol>
+
+    <symbol id="d-gear" viewBox="0 0 44 44">
+      <g stroke="var(--ink)" stroke-width="3.2" stroke-linejoin="round">
+        <g fill="var(--panel)">
+          <rect x="18.5" y="2" width="7" height="9" rx="2"/>
+          <rect x="18.5" y="33" width="7" height="9" rx="2"/>
+          <rect x="18.5" y="2" width="7" height="9" rx="2" transform="rotate(60 22 22)"/>
+          <rect x="18.5" y="33" width="7" height="9" rx="2" transform="rotate(60 22 22)"/>
+          <rect x="18.5" y="2" width="7" height="9" rx="2" transform="rotate(120 22 22)"/>
+          <rect x="18.5" y="33" width="7" height="9" rx="2" transform="rotate(120 22 22)"/>
+        </g>
+        <circle cx="22" cy="22" r="13" fill="var(--panel)"/>
+        <circle cx="22" cy="22" r="5" fill="var(--accent)" fill-opacity=".4"/>
+      </g>
+    </symbol>
+
+    <symbol id="d-bolt" viewBox="0 0 44 44">
+      <rect x="11" y="4" width="22" height="10" rx="3.5" fill="var(--accent)" fill-opacity=".45" stroke="var(--ink)" stroke-width="3.4" stroke-linejoin="round"/>
+      <rect x="16" y="13" width="12" height="27" rx="3" fill="var(--panel)" stroke="var(--ink)" stroke-width="3.4" stroke-linejoin="round"/>
+      <path d="M17 21h10M17 27h10M17 33h10" stroke="var(--ink)" stroke-width="2.4" stroke-linecap="round"/>
+    </symbol>
+
+    <symbol id="d-spring" viewBox="0 0 44 44">
+      <path d="M9 7h26M9 37h26" stroke="var(--ink)" stroke-width="3.6" stroke-linecap="round"/>
+      <path d="M11 11 33 17 11 23l22 6-22 6" fill="none" stroke="var(--ink)" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+
+    <!-- A voxel, for the soft-body work. -->
+    <symbol id="d-voxel" viewBox="0 0 44 44">
+      <path d="M22 5 38 14 22 23 6 14z" fill="var(--accent)" fill-opacity=".55" stroke="var(--ink)" stroke-width="3.2" stroke-linejoin="round"/>
+      <path d="M6 14v16l16 9V23z" fill="var(--panel)" stroke="var(--ink)" stroke-width="3.2" stroke-linejoin="round"/>
+      <path d="M38 14v16l-16 9V23z" fill="var(--accent)" fill-opacity=".22" stroke="var(--ink)" stroke-width="3.2" stroke-linejoin="round"/>
+    </symbol>
+
+    <symbol id="d-wheel" viewBox="0 0 44 44">
+      <circle cx="22" cy="22" r="17" fill="var(--panel)" stroke="var(--ink)" stroke-width="3.6"/>
+      <circle cx="22" cy="22" r="6.5" fill="var(--accent)" fill-opacity=".4" stroke="var(--ink)" stroke-width="3"/>
+      <path d="M22 5v10M22 29v10M5 22h10M29 22h10" stroke="var(--ink)" stroke-width="2.8" stroke-linecap="round"/>
+    </symbol>
+
+    <symbol id="d-chip" viewBox="0 0 44 44">
+      <path d="M13 11v-5M22 11v-5M31 11v-5M13 38v5M22 38v5M31 38v5M9 16H4M9 25H4M35 16h5M35 25h5"
+            stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/>
+      <rect x="9" y="11" width="26" height="27" rx="4" fill="var(--panel)" stroke="var(--ink)" stroke-width="3.4"/>
+      <circle cx="15" cy="17" r="2.6" fill="var(--accent)"/>
+    </symbol>
+
+    <!-- A gripper, closed on nothing. -->
+    <symbol id="d-grip" viewBox="0 0 44 44">
+      <rect x="15" y="4" width="14" height="11" rx="3.5" fill="var(--accent)" fill-opacity=".45" stroke="var(--ink)" stroke-width="3.4" stroke-linejoin="round"/>
+      <path d="M18 15 11 27v11M26 15l7 12v11" fill="none" stroke="var(--ink)" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M11 30h5M33 30h-5" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/>
+    </symbol>
+
+    <!-- ---------- and a few things that are not ---------- -->
+
+    <symbol id="d-star" viewBox="0 0 44 44">
+      <path d="m22 4 5.6 11.7 12.9 1.8-9.4 9 2.3 12.8L22 33.2 10.6 39.3l2.3-12.8-9.4-9 12.9-1.8z"
+            fill="var(--accent)" fill-opacity=".5" stroke="var(--ink)" stroke-width="3.2" stroke-linejoin="round"/>
+    </symbol>
+
+    <symbol id="d-leaf" viewBox="0 0 44 44">
+      <path d="M36 7C18 7 8 16 8 27c0 6 4 10 10 10 12 0 18-12 18-30z" fill="var(--panel)" stroke="var(--ink)" stroke-width="3.4" stroke-linejoin="round"/>
+      <path d="M33 11C24 17 17 26 14 35" fill="none" stroke="var(--ink)" stroke-width="2.8" stroke-linecap="round"/>
+    </symbol>
+
+    <symbol id="d-bean" viewBox="0 0 44 44">
+      <ellipse cx="22" cy="22" rx="12" ry="17" transform="rotate(28 22 22)" fill="var(--accent)" fill-opacity=".4" stroke="var(--ink)" stroke-width="3.4"/>
+      <path d="M15 33c6-6 6-16 14-22" fill="none" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/>
+    </symbol>
+
+    <symbol id="d-plane" viewBox="0 0 44 44">
+      <path d="M4 20 40 6 28 39l-8-11z" fill="var(--panel)" stroke="var(--ink)" stroke-width="3.4" stroke-linejoin="round"/>
+      <path d="M40 6 20 28" fill="none" stroke="var(--ink)" stroke-width="2.8" stroke-linecap="round"/>
+    </symbol>
+
+    <!-- A soft blob — somewhere between the two lists. -->
+    <symbol id="d-blob" viewBox="0 0 44 44">
+      <path d="M22 5c10 0 17 6 17 15 0 11-8 19-17 19S5 31 5 20C5 11 12 5 22 5z"
+            fill="var(--accent)" fill-opacity=".32" stroke="var(--ink)" stroke-width="3.4"/>
+      <circle cx="16" cy="19" r="2.4" fill="var(--ink)"/>
+      <circle cx="27" cy="19" r="2.4" fill="var(--ink)"/>
+      <path d="M17 27c3 2.5 7 2.5 10 0" fill="none" stroke="var(--ink)" stroke-width="2.8" stroke-linecap="round"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div id="gorilla-art" hidden>
+<svg class="gor__svg" viewBox="0 0 120 132" aria-hidden="true" focusable="false">
+  <!-- feet -->
+  <ellipse class="gor-foot" cx="43" cy="121" rx="14" ry="9"/>
+  <ellipse class="gor-foot" cx="77" cy="121" rx="14" ry="9"/>
+
+  <!-- arms, behind the body so the hands land on the chest -->
+  <g class="gor-arm gor-arm--l">
+    <path d="M36 80 C22 84 18 98 26 108" stroke-width="13" stroke-linecap="round" fill="none"/>
+    <circle cx="27" cy="108" r="8.5"/>
+  </g>
+  <g class="gor-arm gor-arm--r">
+    <path d="M84 80 C98 84 102 98 94 108" stroke-width="13" stroke-linecap="round" fill="none"/>
+    <circle cx="93" cy="108" r="8.5"/>
+  </g>
+
+  <!-- body -->
+  <g class="gor-torso">
+    <ellipse class="gor-fur" cx="60" cy="92" rx="29" ry="27"/>
+    <ellipse class="gor-skin" cx="60" cy="95" rx="18" ry="17"/>
+  </g>
+
+  <!-- head -->
+  <g class="gor-head">
+    <circle class="gor-fur" cx="27" cy="43" r="10.5"/>
+    <circle class="gor-fur" cx="93" cy="43" r="10.5"/>
+    <circle class="gor-skin gor-ear-in" cx="27" cy="43" r="5"/>
+    <circle class="gor-skin gor-ear-in" cx="93" cy="43" r="5"/>
+
+    <circle class="gor-fur" cx="60" cy="46" r="31"/>
+    <path class="gor-skin gor-muzzle" d="M60 28c15 0 23 9 23 20s-9 24-23 24-23-11-23-24 8-20 23-20z"/>
+
+    <g class="gor-brow">
+      <path d="M45 36c3-3 8-3 11-1M75 36c-3-3-8-3-11-1" stroke-width="3.2" stroke-linecap="round" fill="none"/>
+    </g>
+
+    <circle class="gor-eye" cx="51" cy="43" r="4.2"/>
+    <circle class="gor-eye" cx="69" cy="43" r="4.2"/>
+    <circle class="gor-pupil" cx="51.8" cy="43.6" r="2"/>
+    <circle class="gor-pupil" cx="69.8" cy="43.6" r="2"/>
+
+    <circle class="gor-nostril" cx="55.5" cy="52" r="1.9"/>
+    <circle class="gor-nostril" cx="64.5" cy="52" r="1.9"/>
+
+    <!-- The mouth. Closed it is a flat line across the muzzle; open it is a
+         round maw with a tongue at the bottom. The lip stroke is non-scaling,
+         so it keeps one weight however far the mouth opens. -->
+    <g class="gor-mouth">
+      <ellipse class="gor-maw" cx="60" cy="65" rx="10" ry="2.8" vector-effect="non-scaling-stroke"/>
+    </g>
+    <ellipse class="gor-tongue" cx="60" cy="72" rx="7" ry="3.2"/>
+  </g>
+</svg>
+</div>
+<button class="fill" id="fill" type="button">Fill it up &rarr;</button>
+<p class="note">Click anywhere off the links to drop things. At 45 the gorilla arrives.<br>The button fills the pile for you.</p>
+<div class="surface"><div class="land__in">
+  <div class="land__art">
+<svg viewBox="0 0 320 150" fill="none" role="img" aria-label="A robot arm holding a block">
+  <path d="M18 134h284" stroke="var(--edge)" stroke-width="4" stroke-linecap="round"/>
+
+  <rect x="30" y="112" width="52" height="22" rx="9" fill="var(--accent)" opacity=".22"/>
+  <rect x="42" y="104" width="28" height="14" rx="6" fill="var(--accent)" opacity=".45"/>
+
+  <path d="M56 108 L92 60" stroke="var(--ink)" stroke-width="9" stroke-linecap="round"/>
+  <path d="M92 60 L168 44" stroke="var(--ink)" stroke-width="9" stroke-linecap="round"/>
+  <path d="M168 44 L222 78" stroke="var(--ink)" stroke-width="9" stroke-linecap="round"/>
+
+  <circle cx="56" cy="108" r="9" fill="var(--ground)" stroke="var(--ink)" stroke-width="5"/>
+  <circle cx="92" cy="60" r="8" fill="var(--ground)" stroke="var(--ink)" stroke-width="5"/>
+  <circle cx="168" cy="44" r="8" fill="var(--ground)" stroke="var(--ink)" stroke-width="5"/>
+
+  <path d="M222 78 l16 -11 M222 78 l7 18" stroke="var(--ink)" stroke-width="8" stroke-linecap="round"/>
+  <rect x="236" y="86" width="26" height="26" rx="8" fill="var(--accent)" opacity=".75"/>
+
+  <path d="M186 30 a34 34 0 0 1 26 14" stroke="var(--accent)" stroke-width="3.5" stroke-linecap="round" opacity=".5"/>
+  <path d="M196 20 a48 48 0 0 1 36 20" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" opacity=".28"/>
+</svg>
+</div>
+  <h1 class="land__name">Qianjun<br>Xia</h1>
+  <p class="land__tag">Robotics &amp; physical intelligence</p>
+  <nav class="land__nav"><ol>
+    <li><a href="#">Research</a></li>
+    <li><a href="#">Projects</a></li>
+    <li><a href="#">Publications</a></li>
+    <li><a href="#">CV</a></li>
+    <li><a href="#">About</a></li>
+  </ol></nav>
+  <p class="land__foot">University of British Columbia</p>
+</div></div>
+<script>
+/*
+ * Click anywhere that is not a control and a small object falls, tumbles and
+ * settles — on the page's own text and images, which act as ledges.
+ *
+ * Matter.js is fetched on the first click, so a visitor who never clicks never
+ * pays for it.
+ */
+(function () {
+  "use strict";
+
+  var MATTER_SRC = "https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.20.0/matter.min.js";
+  // When the pile reaches this, the gorilla comes and clears it.
+  var MAX_ITEMS = 70;
+
+  // How long each beat of the gorilla's routine lasts.
+  var HOP_MS = 900;
+  var BEAT_MS = 1200;
+  var SUCK_MS = 6500;   // ceiling; it leaves as soon as the pile is gone
+  var PEEL_MS = 800;   // spread of the moment each prop is caught
+  var LEAVE_MS = 700;
+  var MAX_LEDGES = 140;
+  // A prop falling at speed can pass through a body thinner than the distance
+  // it covers in one step, so thin ledges are padded. Axis-aligned ones grow
+  // downwards, keeping their top edge where it is drawn.
+  var MIN_LEDGE_H = 16;
+
+  // Physics shape per sprite. Rounds tumble and roll; boxes stack.
+  var PROPS = [
+    { id: "d-nut",    shape: "circle", size: 40 },
+    { id: "d-gear",   shape: "circle", size: 44 },
+    { id: "d-bolt",   shape: "rect",   size: 40, w: 0.32, h: 0.9 },
+    { id: "d-spring", shape: "rect",   size: 42, w: 0.66, h: 0.72 },
+    { id: "d-voxel",  shape: "rect",   size: 40, w: 0.76, h: 0.78 },
+    { id: "d-wheel",  shape: "circle", size: 44 },
+    { id: "d-chip",   shape: "rect",   size: 40, w: 0.62, h: 0.66 },
+    { id: "d-grip",   shape: "rect",   size: 40, w: 0.54, h: 0.82 },
+    { id: "d-star",   shape: "circle", size: 40 },
+    { id: "d-leaf",   shape: "circle", size: 38 },
+    { id: "d-bean",   shape: "circle", size: 36 },
+    { id: "d-plane",  shape: "rect",   size: 40, w: 0.82, h: 0.76 },
+    { id: "d-blob",   shape: "circle", size: 40 }
+  ];
+
+  // Text whose line boxes catch falling props. Kept to prominent type —
+  // every line of every paragraph would bury the page in ledges.
+  var TEXT_LEDGES = [
+    ".land__name", ".land__tag", ".land__nav a", ".land__foot",
+    ".head__title", ".head__tag", ".bar__mark", ".bar__nav a",
+    ".prose h2", ".prose h3", ".group__title",
+    ".plate__name", ".plate__meta", ".pub__title", ".badge", ".btn"
+  ].join(",");
+
+  // Things that catch props by their whole box rather than their text.
+  var BOX_LEDGES = [
+    ".plate__img", ".hero-figure", ".facts",
+    ".fig > img", ".fig__row img", ".fig__video", ".pub__thumb"
+  ].join(",");
+
+  // The arm illustration, in its own viewBox (0 0 320 150). Segments are
+  // {x1,y1,x2,y2,t}; boxes are {x,y,w,h}. Mapped to the screen at measure
+  // time, so a prop lands on a link rather than on the artwork's bounding box.
+  var ARM_VB = { w: 320, h: 150 };
+  var ARM_SEGMENTS = [
+    { x1: 18,  y1: 134, x2: 302, y2: 134, t: 5 },   // ground line
+    { x1: 56,  y1: 108, x2: 92,  y2: 60,  t: 10 },  // link 1
+    { x1: 92,  y1: 60,  x2: 168, y2: 44,  t: 10 },  // link 2
+    { x1: 168, y1: 44,  x2: 222, y2: 78,  t: 10 }   // link 3
+  ];
+  var ARM_BOXES = [
+    { x: 30,  y: 104, w: 52, h: 30 },               // base
+    { x: 236, y: 86,  w: 26, h: 26 }                // the block it holds
+  ];
+
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  var stage = null;
+  var engine = null;
+  var walls = [];
+  var ledges = [];       // static bodies mirroring text lines and boxes
+  var items = [];        // { body, el, half }
+  var loading = false;
+  var queued = null;
+  var raf = 0;
+  var last = 0;
+
+  var gorilla = null;   // { el, phase, mouth: {x, y} }
+
+  // ---------------------------------------------------------------- setup
+
+  function makeStage() {
+    stage = document.createElement("div");
+    stage.className = "drop-stage";
+    stage.setAttribute("aria-hidden", "true");
+    document.body.appendChild(stage);
+  }
+
+  function buildWalls() {
+    var M = window.Matter;
+    var w = window.innerWidth;
+    var h = window.innerHeight;
+    var t = 200; // thick, so nothing tunnels through at speed
+
+    for (var i = 0; i < walls.length; i++) M.Composite.remove(engine.world, walls[i]);
+
+    walls = [
+      M.Bodies.rectangle(w / 2, h + t / 2, w + t * 2, t, { isStatic: true }),
+      M.Bodies.rectangle(-t / 2, h / 2, t, h * 3, { isStatic: true }),
+      M.Bodies.rectangle(w + t / 2, h / 2, t, h * 3, { isStatic: true })
+    ];
+    M.Composite.add(engine.world, walls);
+  }
+
+  // ---------------------------------------------------------------- ledges
+
+  // Ledges are measured ONCE, in document coordinates. Scrolling then costs
+  // one subtraction per ledge — no getBoundingClientRect, so no forced
+  // reflow on the scroll path. Re-measuring happens only on resize, on font
+  // load, and when the layout is known to have changed.
+  function measure() {
+    var sx = window.pageXOffset;
+    var sy = window.pageYOffset;
+    var out = [];
+    var range = document.createRange();
+
+    function push(r, angle) {
+      if (out.length >= MAX_LEDGES) return;
+      if (r.w < 12 || r.h < 5) return;
+
+      var h = r.h;
+      var y = r.y;
+      if (h < MIN_LEDGE_H) {
+        if (angle) {
+          h = MIN_LEDGE_H;             // rotated: grow about the centre line
+        } else {
+          y += (MIN_LEDGE_H - h) / 2;  // upright: grow downwards only
+          h = MIN_LEDGE_H;
+        }
+      }
+
+      out.push({ x: r.x + sx, y: y + sy, w: r.w, h: h, a: angle || 0 });
+    }
+
+    function pushRect(r) {
+      push({ x: r.left + r.width / 2, y: r.top + r.height / 2, w: r.width, h: r.height });
+    }
+
+    // Prominent type, one body per rendered line box.
+    var texts = document.querySelectorAll(TEXT_LEDGES);
+    for (var i = 0; i < texts.length; i++) {
+      var el = texts[i];
+      if (el.hasAttribute("data-no-collide")) continue;
+      try {
+        range.selectNodeContents(el);
+        var lines = range.getClientRects();
+        for (var j = 0; j < lines.length; j++) pushRect(lines[j]);
+      } catch (e) {
+        pushRect(el.getBoundingClientRect());
+      }
+    }
+
+    // Images and panels, by their whole box.
+    var boxes = document.querySelectorAll(BOX_LEDGES);
+    for (var k = 0; k < boxes.length; k++) {
+      if (boxes[k].hasAttribute("data-no-collide")) continue;
+      pushRect(boxes[k].getBoundingClientRect());
+    }
+
+    // The arm, by its actual links rather than its bounding box.
+    var art = document.querySelector(".land__art svg");
+    if (art && !art.hasAttribute("data-no-collide")) {
+      var box = art.getBoundingClientRect();
+      var k2 = box.width / ARM_VB.w;          // the SVG scales uniformly
+      var ox = box.left;
+      var oy = box.top + (box.height - ARM_VB.h * k2) / 2;
+
+      for (var a = 0; a < ARM_SEGMENTS.length; a++) {
+        var g = ARM_SEGMENTS[a];
+        var dx = (g.x2 - g.x1) * k2;
+        var dy = (g.y2 - g.y1) * k2;
+        push({
+          x: ox + (g.x1 + g.x2) / 2 * k2,
+          y: oy + (g.y1 + g.y2) / 2 * k2,
+          w: Math.sqrt(dx * dx + dy * dy),
+          h: g.t * k2
+        }, Math.atan2(dy, dx));
+      }
+
+      for (var b = 0; b < ARM_BOXES.length; b++) {
+        var q = ARM_BOXES[b];
+        push({
+          x: ox + (q.x + q.w / 2) * k2,
+          y: oy + (q.y + q.h / 2) * k2,
+          w: q.w * k2,
+          h: q.h * k2
+        });
+      }
+    }
+
+    range.detach && range.detach();
+    return out;
+  }
+
+  function rebuildLedges() {
+    var M = window.Matter;
+    for (var i = 0; i < ledges.length; i++) M.Composite.remove(engine.world, ledges[i].body);
+    ledges = [];
+
+    var rects = measure();
+    for (var j = 0; j < rects.length; j++) {
+      var r = rects[j];
+      var body = M.Bodies.rectangle(r.x, r.y, r.w, r.h, {
+        isStatic: true,
+        angle: r.a,
+        friction: 0.6,
+        restitution: 0.1
+      });
+      M.Composite.add(engine.world, body);
+      ledges.push({ body: body, docX: r.x, docY: r.y });
+    }
+    placeLedges();
+  }
+
+  // The props live in a viewport-fixed stage, so the ledges track the scroll.
+  function placeLedges() {
+    var M = window.Matter;
+    var sx = window.pageXOffset;
+    var sy = window.pageYOffset;
+    for (var i = 0; i < ledges.length; i++) {
+      M.Body.setPosition(ledges[i].body, {
+        x: ledges[i].docX - sx,
+        y: ledges[i].docY - sy
+      });
+    }
+  }
+
+  function start() {
+    var M = window.Matter;
+    engine = M.Engine.create();
+    engine.gravity.y = 1.1;
+    makeStage();
+    buildWalls();
+    rebuildLedges();
+
+    var scrollQueued = false;
+    window.addEventListener("scroll", function () {
+      if (scrollQueued) return;
+      scrollQueued = true;
+      requestAnimationFrame(function () {
+        scrollQueued = false;
+        placeLedges();
+      });
+    }, { passive: true });
+
+    var resizeTimer;
+    window.addEventListener("resize", function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function () {
+        buildWalls();
+        rebuildLedges();
+      }, 150);
+    });
+
+    // Web fonts land after first paint and move every line box.
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(rebuildLedges);
+    }
+
+    last = performance.now();
+    raf = requestAnimationFrame(tick);
+  }
+
+  // ---------------------------------------------------------------- loop
+
+  var STEP = 1000 / 60;
+  var owed = 0;
+
+  function tick(now) {
+    var M = window.Matter;
+
+    // Fixed timestep, so the pile behaves the same at 60Hz and 120Hz.
+    // The backlog is capped, so a stalled tab resumes instead of catching up.
+    owed = Math.min(owed + (now - last), STEP * 3);
+    last = now;
+
+    while (owed >= STEP) {
+      M.Engine.update(engine, STEP);
+      owed -= STEP;
+    }
+
+    stepGorilla(now);
+
+    for (var i = 0; i < items.length; i++) {
+      var b = items[i].body;
+      items[i].el.style.transform =
+        "translate(" + (b.position.x - items[i].half) + "px," +
+        (b.position.y - items[i].half) + "px) rotate(" + b.angle + "rad)";
+    }
+
+    raf = requestAnimationFrame(tick);
+  }
+
+  // ---------------------------------------------------------------- props
+
+  function spawn(x, y) {
+    var M = window.Matter;
+    var p = PROPS[Math.floor(Math.random() * PROPS.length)];
+    var size = p.size * (0.82 + Math.random() * 0.36);
+    var half = size / 2;
+
+    var opts = {
+      restitution: 0.36,
+      friction: 0.42,
+      frictionAir: 0.012,
+      density: 0.0016,
+      angle: (Math.random() - 0.5) * 1.2
+    };
+
+    var body = p.shape === "circle"
+      ? M.Bodies.circle(x, y, half * 0.86, opts)
+      : M.Bodies.rectangle(x, y, size * p.w, size * p.h, opts);
+
+    // A small sideways nudge so a column of clicks does not stack dead straight.
+    M.Body.setVelocity(body, { x: (Math.random() - 0.5) * 4, y: 0 });
+    M.Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.25);
+
+    var el = document.createElement("div");
+    el.className = "drop-prop";
+    el.style.width = el.style.height = size + "px";
+    el.innerHTML = '<svg viewBox="0 0 44 44"><use href="#' + p.id + '"></use></svg>';
+
+    stage.appendChild(el);
+    M.Composite.add(engine.world, body);
+    items.push({ body: body, el: el, half: half });
+
+    if (items.length >= MAX_ITEMS) summonGorilla();
+  }
+
+  // ---------------------------------------------------------------- gorilla
+
+  // Once the pile is full a gorilla hops in, beats its chest, and inhales the
+  // lot. It runs as a small state machine on timers; the inhale itself is
+  // physics — every prop is pulled toward the mouth each step.
+  function summonGorilla() {
+    if (gorilla) return;
+    var art = document.getElementById("gorilla-art");
+    if (!art) return;                    // page did not ship the artwork
+
+    var el = document.createElement("div");
+    el.className = "gor is-hopping";
+    el.innerHTML = art.innerHTML;
+
+    el.style.left = pickSpot() + "px";
+
+    stage.appendChild(el);
+    gorilla = { el: el, phase: "hop", until: performance.now() + HOP_MS };
+  }
+
+  // Where along the bottom edge the gorilla should stand: clear of the page's
+  // own content, and as far from the pile as that allows.
+  //
+  // Scoring a handful of candidates is enough and costs nothing — fifteen
+  // positions against at most 45 props and 140 ledges, once, when it is
+  // summoned. A continuous optimum would cost far more and look no different.
+  var GOR_HALF_W = 78;
+  var GOR_H = 150;
+
+  function pickSpot() {
+    var vw = window.innerWidth;
+    var top = window.innerHeight - GOR_H;
+    var lo = GOR_HALF_W + 8;
+    var hi = vw - GOR_HALF_W - 8;
+    if (hi < lo) return vw / 2;
+
+    var best = null;
+
+    for (var n = 0; n < 15; n++) {
+      var x = lo + (hi - lo) * (n / 14);
+
+      // Would it stand over something on the page?
+      var covers = false;
+      for (var i = 0; i < ledges.length; i++) {
+        var b = ledges[i].body.bounds;
+        if (b.max.y > top && b.max.x > x - GOR_HALF_W && b.min.x < x + GOR_HALF_W) {
+          covers = true;
+          break;
+        }
+      }
+
+      // How far is the nearest prop? The pile sits on the floor, so the
+      // horizontal gap is the one that matters.
+      var near = Infinity;
+      for (var j = 0; j < items.length; j++) {
+        var gap = Math.abs(items[j].body.position.x - x);
+        if (gap < near) near = gap;
+      }
+      if (near === Infinity) near = vw;
+
+      // Covering content is disqualifying, but never fatal: if the page fills
+      // the whole bottom edge, the least bad spot still wins.
+      var score = near - (covers ? 1e6 : 0);
+      if (!best || score > best.score) best = { x: x, score: score };
+    }
+
+    return Math.round(best.x);
+  }
+
+  // The mouth in viewport coordinates, read off the rendered SVG.
+  function mouthAt() {
+    var maw = gorilla.el.querySelector(".gor-maw");
+    if (!maw) return null;
+    var r = maw.getBoundingClientRect();
+    return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+  }
+
+  function setPhase(phase, ms) {
+    gorilla.phase = phase;
+    gorilla.until = performance.now() + ms;
+    gorilla.el.className = "gor is-" + phase;
+  }
+
+  function stepGorilla(now) {
+    if (!gorilla) return;
+
+    if (gorilla.phase === "hop" && now >= gorilla.until) {
+      setPhase("beating", BEAT_MS);
+      return;
+    }
+
+    if (gorilla.phase === "beating" && now >= gorilla.until) {
+      setPhase("sucking", SUCK_MS);
+      return;
+    }
+
+    if (gorilla.phase === "sucking") {
+      inhale(now);
+      if (items.length === 0 || now >= gorilla.until) {
+        while (items.length) swallow(items.pop());
+        setPhase("leaving", LEAVE_MS);
+      }
+      return;
+    }
+
+    if (gorilla.phase === "leaving" && now >= gorilla.until) {
+      if (gorilla.el.parentNode) gorilla.el.parentNode.removeChild(gorilla.el);
+      gorilla = null;
+    }
+  }
+
+  function inhale(now) {
+    var M = window.Matter;
+    var mouth = mouthAt();
+    if (!mouth) return;
+
+    for (var i = items.length - 1; i >= 0; i--) {
+      var it = items[i];
+
+      // Each prop is caught a moment after the last, so the pile is drawn off
+      // as a stream instead of the whole heap lifting on one frame.
+      if (it.suckAt === undefined) it.suckAt = now + Math.random() * PEEL_MS;
+      if (now < it.suckAt) continue;
+
+      var p = it.body.position;
+      var dx = mouth.x - p.x;
+      var dy = mouth.y - p.y;
+      var d = Math.sqrt(dx * dx + dy * dy) || 1;
+
+      if (d < 34) {                       // close enough to be swallowed
+        items.splice(i, 1);
+        swallow(it);
+        continue;
+      }
+
+      // Props stop colliding once they are in the draught, so they stream in
+      // rather than dragging across the text they had landed on.
+      //
+      // This clears the collision mask rather than setting isSensor, because
+      // Matter reads isSensor when it creates a contact pair and never again —
+      // a prop already resting on a ledge keeps its existing pair and stays
+      // stuck. The mask is consulted every step, so it takes effect at once.
+      if (!it.sucked) {
+        it.sucked = true;
+        it.body.collisionFilter.mask = 0;
+        it.body.frictionAir = 0.02;      // light damping, so they arrive without orbiting
+        // A little spread per prop, so the pile peels away in a stream rather
+        // than every piece launching on the same frame.
+        it.suck = 0.7 + Math.random() * 0.6;
+        M.Body.setAngularVelocity(it.body, (Math.random() - 0.5) * 0.6);
+      }
+
+      // Cancel the prop's weight first, otherwise the draught is fighting
+      // gravity the whole way up and the far end of the pile never arrives.
+      var lift = it.body.mass * engine.gravity.y * engine.gravity.scale;
+
+      // A near-constant pull, not one that falls off with distance: the props
+      // furthest away are exactly the ones that need help crossing the room,
+      // and the speed cap below is what stops the near ones overshooting.
+      // Air friction caps speed at force / (mass * frictionAir), so this
+      // coefficient is sized against the damping set above.
+      var pull = 0.0062 * it.suck * it.body.mass;
+      M.Body.applyForce(it.body, p, {
+        x: (dx / d) * pull,
+        y: (dy / d) * pull - lift
+      });
+
+      // Without a ceiling the pull near the mouth is strong enough to carry a
+      // prop clean past the capture radius in one step, and it never arrives.
+      var v = it.body.velocity;
+      var sp = Math.sqrt(v.x * v.x + v.y * v.y);
+      if (sp > 5.5) M.Body.setVelocity(it.body, { x: v.x / sp * 5.5, y: v.y / sp * 5.5 });
+    }
+  }
+
+  function swallow(item) {
+    item.el.classList.add("is-eaten");
+    window.Matter.Composite.remove(engine.world, item.body);
+    setTimeout(function () {
+      if (item.el.parentNode) item.el.parentNode.removeChild(item.el);
+    }, 260);
+  }
+
+  // ---------------------------------------------------------------- input
+
+  function loadMatter(then) {
+    if (window.Matter) return then();
+    if (loading) return;
+    loading = true;
+
+    var s = document.createElement("script");
+    s.src = MATTER_SRC;
+    s.onload = then;
+    s.onerror = function () { loading = false; };
+    document.head.appendChild(s);
+  }
+
+  // Anything a visitor might be aiming at, rather than the page itself.
+  var INTERACTIVE = "a,button,input,textarea,select,label,summary,details,iframe,video,audio,[role=button]";
+
+  var downX = 0, downY = 0, downOK = false;
+
+  document.addEventListener("mousedown", function (e) {
+    downX = e.clientX;
+    downY = e.clientY;
+    var t = e.target;
+    downOK = e.button === 0 && !!t && typeof t.closest === "function" && !t.closest(INTERACTIVE);
+  });
+
+  document.addEventListener("mouseup", function (e) {
+    if (!downOK) return;
+    downOK = false;
+
+    // A drag is a selection or a scroll, not a click.
+    if (Math.abs(e.clientX - downX) > 6 || Math.abs(e.clientY - downY) > 6) return;
+
+    var sel = window.getSelection();
+    if (sel && String(sel).length) return;
+
+    drop(e.clientX, e.clientY);
+  });
+
+  function drop(x, y) {
+    if (engine) return spawn(x, y);
+
+    queued = { x: x, y: y };
+    loadMatter(function () {
+      loading = false;
+      if (!window.Matter) return;
+      start();
+      if (queued) {
+        spawn(queued.x, queued.y);
+        queued = null;
+      }
+    });
+  }
+
+  // Pause the loop while the tab is hidden.
+  document.addEventListener("visibilitychange", function () {
+    if (!engine) return;
+    if (document.hidden) {
+      cancelAnimationFrame(raf);
+      raf = 0;
+    } else if (!raf) {
+      last = performance.now();
+      owed = 0;
+      raf = requestAnimationFrame(tick);
+    }
+  });
+})();
+
+</script>
+<script>
+  // Preview only: synthesise the clicks so the pile fills without 45 real ones.
+  document.getElementById("fill").addEventListener("click", function () {
+    var n = 0, w = window.innerWidth;
+    var t = setInterval(function () {
+      var target = document.querySelector(".land__in");
+      var x = w * 0.28 + Math.random() * w * 0.44;
+      var y = 90 + Math.random() * 120;
+      ["mousedown", "mouseup"].forEach(function (type) {
+        target.dispatchEvent(new MouseEvent(type, { bubbles: true, clientX: x, clientY: y, button: 0 }));
+      });
+      if (++n >= 46) clearInterval(t);
+    }, 55);
+  });
+</script>

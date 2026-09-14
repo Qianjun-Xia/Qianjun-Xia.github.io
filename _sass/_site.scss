@@ -14,6 +14,19 @@
   text-align: center;
 }
 
+// Clicking here drops things, and clicking the same spot twice is a
+// double-click, which selects the word under it. None of this page's type is
+// there to be copied — it is a name, a tagline and an index — so selection is
+// off across it. Prose on the inner pages stays selectable.
+.land__name,
+.land__tag,
+.land__nav,
+.land__foot,
+.land__art {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 .land__in {
   width: 100%;
   max-width: 34rem;
