@@ -621,3 +621,70 @@
   opacity: 0;
   scale: 0.7;
 }
+
+// Marks a project whose page is on another site.
+.out {
+  font-size: 0.75em;
+  color: var(--accent);
+  vertical-align: 0.1em;
+}
+
+// ---------------------------------------------- figures
+
+.fig {
+  margin: var(--gap-l) 0;
+
+  > img {
+    width: 100%;
+    border-radius: var(--radius-s);
+    border: 1.5px solid var(--edge);
+    background: var(--panel);
+  }
+
+  figcaption {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    line-height: 1.6;
+    letter-spacing: 0.03em;
+    color: var(--soft);
+    margin-top: var(--gap-xs);
+    padding-inline: 0.25rem;
+  }
+}
+
+// Lets a figure breathe past the prose measure on wide screens.
+@media (min-width: 64rem) {
+  .fig--wide {
+    width: calc(100% + 8rem);
+    margin-inline: -4rem;
+  }
+}
+
+.fig__row {
+  display: grid;
+  gap: var(--gap-s);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  align-items: center;
+
+  img {
+    width: 100%;
+    border-radius: var(--radius-s);
+    border: 1.5px solid var(--edge);
+    background: var(--panel);
+  }
+}
+
+.fig__video {
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-s);
+  overflow: hidden;
+  border: 1.5px solid var(--edge);
+  background: var(--panel);
+
+  iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+  }
+}

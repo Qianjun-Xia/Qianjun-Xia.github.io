@@ -1,15 +1,20 @@
 /*
- * Click anywhere that is not a control and a small object falls, tumbles
- * and settles at the bottom of the window.
+ * Click anywhere that is not a control and a small object falls, tumbles and
+ * settles — on the page's own text and images, which act as ledges.
  *
- * Matter.js is fetched on the first click, so a visitor who never clicks
- * never pays for it.
+ * Matter.js is fetched on the first click, so a visitor who never clicks never
+ * pays for it.
  */
 (function () {
   "use strict";
 
   var MATTER_SRC = "/assets/js/lib/matter.min.js";
   var MAX_ITEMS = 70;
+  var MAX_LEDGES = 140;
+  // A prop falling at speed can pass through a body thinner than the distance
+  // it covers in one step, so thin ledges are padded. Axis-aligned ones grow
+  // downwards, keeping their top edge where it is drawn.
+  var MIN_LEDGE_H = 16;
 
   // Physics shape per sprite. Rounds tumble and roll; boxes stack.
   var PROPS = [
@@ -28,14 +33,45 @@
     { id: "d-blob",   shape: "circle", size: 40 }
   ];
 
+  // Text whose line boxes catch falling props. Kept to prominent type —
+  // every line of every paragraph would bury the page in ledges.
+  var TEXT_LEDGES = [
+    ".land__name", ".land__tag", ".land__nav a", ".land__foot",
+    ".head__title", ".head__tag", ".bar__mark", ".bar__nav a",
+    ".prose h2", ".prose h3", ".group__title",
+    ".plate__name", ".plate__meta", ".pub__title", ".badge", ".btn"
+  ].join(",");
+
+  // Things that catch props by their whole box rather than their text.
+  var BOX_LEDGES = [
+    ".plate__img", ".hero-figure", ".facts",
+    ".fig > img", ".fig__row img", ".fig__video", ".pub__thumb"
+  ].join(",");
+
+  // The arm illustration, in its own viewBox (0 0 320 150). Segments are
+  // {x1,y1,x2,y2,t}; boxes are {x,y,w,h}. Mapped to the screen at measure
+  // time, so a prop lands on a link rather than on the artwork's bounding box.
+  var ARM_VB = { w: 320, h: 150 };
+  var ARM_SEGMENTS = [
+    { x1: 18,  y1: 134, x2: 302, y2: 134, t: 5 },   // ground line
+    { x1: 56,  y1: 108, x2: 92,  y2: 60,  t: 10 },  // link 1
+    { x1: 92,  y1: 60,  x2: 168, y2: 44,  t: 10 },  // link 2
+    { x1: 168, y1: 44,  x2: 222, y2: 78,  t: 10 }   // link 3
+  ];
+  var ARM_BOXES = [
+    { x: 30,  y: 104, w: 52, h: 30 },               // base
+    { x: 236, y: 86,  w: 26, h: 26 }                // the block it holds
+  ];
+
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-  var stage = null;      // the fixed overlay the props live in
+  var stage = null;
   var engine = null;
   var walls = [];
-  var items = [];        // { body, el }
+  var ledges = [];       // static bodies mirroring text lines and boxes
+  var items = [];        // { body, el, half }
   var loading = false;
-  var queued = null;     // a click that arrived while the library loaded
+  var queued = null;
   var raf = 0;
   var last = 0;
 
@@ -64,21 +100,127 @@
     M.Composite.add(engine.world, walls);
   }
 
-  function start() {
+  // ---------------------------------------------------------------- ledges
+
+  // Ledges are measured ONCE, in document coordinates. Scrolling then costs
+  // one subtraction per ledge — no getBoundingClientRect, so no forced
+  // reflow on the scroll path. Re-measuring happens only on resize, on font
+  // load, and when the layout is known to have changed.
+  function measure() {
+    var sx = window.pageXOffset;
+    var sy = window.pageYOffset;
+    var out = [];
+    var range = document.createRange();
+
+    function push(r, angle) {
+      if (out.length >= MAX_LEDGES) return;
+      if (r.w < 12 || r.h < 5) return;
+
+      var h = r.h;
+      var y = r.y;
+      if (h < MIN_LEDGE_H) {
+        if (angle) {
+          h = MIN_LEDGE_H;             // rotated: grow about the centre line
+        } else {
+          y += (MIN_LEDGE_H - h) / 2;  // upright: grow downwards only
+          h = MIN_LEDGE_H;
+        }
+      }
+
+      out.push({ x: r.x + sx, y: y + sy, w: r.w, h: h, a: angle || 0 });
+    }
+
+    function pushRect(r) {
+      push({ x: r.left + r.width / 2, y: r.top + r.height / 2, w: r.width, h: r.height });
+    }
+
+    // Prominent type, one body per rendered line box.
+    var texts = document.querySelectorAll(TEXT_LEDGES);
+    for (var i = 0; i < texts.length; i++) {
+      var el = texts[i];
+      if (el.hasAttribute("data-no-collide")) continue;
+      try {
+        range.selectNodeContents(el);
+        var lines = range.getClientRects();
+        for (var j = 0; j < lines.length; j++) pushRect(lines[j]);
+      } catch (e) {
+        pushRect(el.getBoundingClientRect());
+      }
+    }
+
+    // Images and panels, by their whole box.
+    var boxes = document.querySelectorAll(BOX_LEDGES);
+    for (var k = 0; k < boxes.length; k++) {
+      if (boxes[k].hasAttribute("data-no-collide")) continue;
+      pushRect(boxes[k].getBoundingClientRect());
+    }
+
+    // The arm, by its actual links rather than its bounding box.
+    var art = document.querySelector(".land__art svg");
+    if (art && !art.hasAttribute("data-no-collide")) {
+      var box = art.getBoundingClientRect();
+      var k2 = box.width / ARM_VB.w;          // the SVG scales uniformly
+      var ox = box.left;
+      var oy = box.top + (box.height - ARM_VB.h * k2) / 2;
+
+      for (var a = 0; a < ARM_SEGMENTS.length; a++) {
+        var g = ARM_SEGMENTS[a];
+        var dx = (g.x2 - g.x1) * k2;
+        var dy = (g.y2 - g.y1) * k2;
+        push({
+          x: ox + (g.x1 + g.x2) / 2 * k2,
+          y: oy + (g.y1 + g.y2) / 2 * k2,
+          w: Math.sqrt(dx * dx + dy * dy),
+          h: g.t * k2
+        }, Math.atan2(dy, dx));
+      }
+
+      for (var b = 0; b < ARM_BOXES.length; b++) {
+        var q = ARM_BOXES[b];
+        push({
+          x: ox + (q.x + q.w / 2) * k2,
+          y: oy + (q.y + q.h / 2) * k2,
+          w: q.w * k2,
+          h: q.h * k2
+        });
+      }
+    }
+
+    range.detach && range.detach();
+    return out;
+  }
+
+  function rebuildLedges() {
     var M = window.Matter;
-    engine = M.Engine.create();
-    engine.gravity.y = 1.1;
-    makeStage();
-    buildWalls();
+    for (var i = 0; i < ledges.length; i++) M.Composite.remove(engine.world, ledges[i].body);
+    ledges = [];
 
-    var resizeTimer;
-    window.addEventListener("resize", function () {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(buildWalls, 150);
-    });
+    var rects = measure();
+    for (var j = 0; j < rects.length; j++) {
+      var r = rects[j];
+      var body = M.Bodies.rectangle(r.x, r.y, r.w, r.h, {
+        isStatic: true,
+        angle: r.a,
+        friction: 0.6,
+        restitution: 0.1
+      });
+      M.Composite.add(engine.world, body);
+      ledges.push({ body: body, docX: r.x, docY: r.y });
+    }
+    placeLedges();
+  }
 
-    last = performance.now();
-    raf = requestAnimationFrame(tick);
+  // The props live in a viewport-fixed stage, so the ledges track the scroll.
+  function placeLedges() {
+    var M = window.Matter;
+    var sx = window.pageXOffset;
+    var sy = window.pageYOffset;
+    for (var i = 0; i < ledges.length; i++) {
+      M.Body.setPosition(ledges[i].body, {
+        x: ledges[i].docX - sx,
+        y: ledges[i].docY - sy
+      });
+    }
   }
 
   // ---------------------------------------------------------------- loop
@@ -136,8 +278,7 @@
     var el = document.createElement("div");
     el.className = "drop-prop";
     el.style.width = el.style.height = size + "px";
-    el.innerHTML =
-      '<svg viewBox="0 0 44 44"><use href="#' + p.id + '"></use></svg>';
+    el.innerHTML = '<svg viewBox="0 0 44 44"><use href="#' + p.id + '"></use></svg>';
 
     stage.appendChild(el);
     M.Composite.add(engine.world, body);

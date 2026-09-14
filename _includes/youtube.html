@@ -1,0 +1,15 @@
+{%- comment -%}
+A YouTube embed that keeps its aspect ratio and carries a caption.
+
+  {% include youtube.html id="LupJhmmK-0E" caption="…" %}
+{%- endcomment -%}
+<figure class="fig">
+  <div class="fig__video">
+    <iframe src="https://www.youtube.com/embed/{{ include.id }}"
+            title="{{ include.caption | default: 'Video' | escape }}"
+            frameborder="0" loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen></iframe>
+  </div>
+  {%- if include.caption %}<figcaption>{{ include.caption }}</figcaption>{%- endif %}
+</figure>

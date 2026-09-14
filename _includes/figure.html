@@ -1,0 +1,10 @@
+{%- comment -%}
+One figure. Use inside a project body instead of a raw <img> so every
+figure gets the same frame, radius and caption treatment.
+
+  {% include figure.html src="/images/x.webp" alt="…" caption="…" %}
+{%- endcomment -%}
+<figure class="fig{% if include.wide %} fig--wide{% endif %}">
+  <img src="{{ include.src | relative_url }}" alt="{{ include.alt }}" loading="lazy" decoding="async">
+  {%- if include.caption %}<figcaption>{{ include.caption }}</figcaption>{%- endif %}
+</figure>

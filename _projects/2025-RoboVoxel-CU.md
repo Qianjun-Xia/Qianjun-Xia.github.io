@@ -12,84 +12,58 @@ advisors: "Jiong Lin, Prof. Hod Lipson"
 excerpt: "Recasts system identification as video-to-image translation: a video transformer reads a short grayscale clip of a deformable body and predicts a voxel-level parameter field — stiffness, mass, actuator layout — that a spring-mass simulator can replay."
 role: "Dataset generation, model design, training and evaluation"
 tech: [PyTorch, Video Transformer, VAE, Evolution Gym, Physics Simulation]
-spire:
-  type: boss
-  rarity: rare
-  cost: 3
-  card_type: power
-  flavor: "Read the motion. Name the matter."
----
-**RoboVoxel** is a project on learning *voxel-level physical properties* and *actuator layouts* of soft bodies directly from short grayscale videos.  
-Instead of hand-tuning parameters in a simulator, we ask a model to infer them from motion, and then check whether those inferred parameters can re-generate similar behavior.
-
 ---
 
-## Motivation
+A rigid robot arrives with a CAD model: clean masses, known inertias, documented
+joint limits. A soft body arrives with none of that. Its material properties vary
+across space, it deforms far past the linear regime, and its actuators may be
+buried where no camera can see them.
 
-Rigid robots usually come with clean CAD models and well-documented masses, inertias, and joint limits.  
-Soft robots and deformable objects are very different:
+**RoboVoxel** asks whether a short video is enough to guess the rest.
 
-- material properties can **vary across space**,  
-- large deformations and contacts are common,  
-- actuators may be **embedded** and not directly observable.
+> Given a few seconds of a deformable body moving, can we recover the material
+> field and actuator placement well enough to reproduce that motion in simulation?
 
-RoboVoxel explores the question:
+## Method
 
-> Given a short video of a deformable body moving, can we guess the underlying material field and actuator placement well enough to reproduce its motion in simulation?
+The trick is to stop treating this as parameter fitting and treat it as
+**translation**. The input is a grayscale video. The output is a single *parameter
+image*, where each pixel is a voxel and each colour channel carries one physical
+quantity — stiffness, mass, damping, actuator direction.
 
----
+That image is exactly what the simulator eats. If the simulator's rollout matches
+the original video, the inferred parameters mean something.
 
-## Core Idea
+From grey motion, to coloured physics, and back to motion.
 
-We reinterpret **system identification** as a kind of **video-to-image translation**:
+The pipeline has three parts:
 
-- **Input**: a short grayscale video of a soft object or robot.  
-- **Output**: a single “parameter image”, where each pixel corresponds to a voxel in the simulator and each color channel encodes some physical quantity (e.g., stiffness, mass, damping, actuator direction).
+1. **A synthetic dataset.** A modified 2D spring-mass environment, built on
+   Evolution Gym, generates matched pairs for many random beams, blobs and soft
+   robots: a grayscale motion sequence, and the colour parameter image that
+   produced it.
 
-This parameter image is then used as the input to a spring–mass simulator.  
-If the video rolled out by the simulator matches the original one, the inferred parameters are likely meaningful.
+2. **A frozen decoder.** A convolutional autoencoder is trained on parameter
+   images alone, then frozen. It becomes a renderer: low-dimensional latent in,
+   full-resolution parameter field out.
 
-In short:
+3. **A video transformer.** A TimeSformer-style model reads the grayscale frames
+   and emits a latent vector for that frozen decoder. Training supervises the
+   predicted parameter image directly.
 
-> from gray motion → to colored physics → back to motion.
+To hand a prediction back to the simulator, the continuous output is clustered
+into a discrete set of material and actuator types, then simulated.
 
----
+## Results
 
-## Method (High-Level)
+{% include figures.html
+   a="/images/projects/RoboVoxel/beam_output.gif" a_alt="Simulated beam rollout"
+   b="/images/projects/RoboVoxel/blob_output.gif" b_alt="Simulated blob rollout"
+   c="/images/projects/RoboVoxel/robot_output.gif" c_alt="Simulated soft robot rollout"
+   caption="Rollouts driven by inferred parameters — a beam, a blob, and a soft robot." %}
 
-<!-- ![Pipeline](images/robovoxel_pipeline.png) -->
+## My contribution
 
-The pipeline has three main pieces:
-
-1. **Synthetic dataset with a modified simulator**  
-   - We modified a 2D spring–mass environment based on Evolution Gym.  
-   - For many random beams, blobs, and soft robots, we generate:
-     - a **grayscale motion sequence**, and  
-     - a **color parameter image** (used inside the simulator).  
-
-2. **Image decoder for parameter fields**  
-   - We train a convolutional autoencoding model (e.g., VAE-style) purely on parameter images.  
-   - After training, we **freeze the decoder** so that it becomes a “renderer” from a low-dimensional latent vector to a full-resolution parameter field.
-
-3. **Video transformer for inference from motion**  
-   - A video transformer (TimeSformer-style architecture) consumes the grayscale frames.  
-   - It outputs a latent vector that is fed into the frozen decoder, producing the predicted parameter image.  
-   - The model is trained with reconstruction losses on these parameter images.
-
-To use the prediction for simulation, we optionally cluster or discretize the output values to obtain a set of material / actuator types, then run the simulation.
-
-<div style="flex: 1; text-align: center;">
-   <img src="/images/projects/RoboVoxel/beam_output.gif" 
-      alt="Simulation GIF"
-      style="max-width: 200%; height: auto; border-radius: 6px;">
-</div>
-<div style="flex: 1; text-align: center;">
-   <img src="/images/projects/RoboVoxel/blob_output.gif" 
-      alt="Simulation GIF"
-      style="max-width: 200%; height: auto; border-radius: 6px;">
-</div>
-<div style="flex: 1; text-align: center;">
-   <img src="/images/projects/RoboVoxel/robot_output.gif" 
-      alt="Simulation GIF"
-      style="max-width: 200%; height: auto; border-radius: 6px;">
-</div>
+Dataset generation and the simulator modifications, the model design for both the
+parameter-image decoder and the video transformer, and the training and evaluation
+that connects them.

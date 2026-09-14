@@ -1,0 +1,13 @@
+{%- comment -%}
+Two or three figures on one row, collapsing to a column on narrow screens.
+
+  {% include figures.html a="/a.webp" a_alt="…" b="/b.webp" b_alt="…" caption="…" %}
+{%- endcomment -%}
+<figure class="fig fig--row">
+  <div class="fig__row">
+    <img src="{{ include.a | relative_url }}" alt="{{ include.a_alt }}" loading="lazy" decoding="async">
+    {%- if include.b %}<img src="{{ include.b | relative_url }}" alt="{{ include.b_alt }}" loading="lazy" decoding="async">{%- endif %}
+    {%- if include.c %}<img src="{{ include.c | relative_url }}" alt="{{ include.c_alt }}" loading="lazy" decoding="async">{%- endif %}
+  </div>
+  {%- if include.caption %}<figcaption>{{ include.caption }}</figcaption>{%- endif %}
+</figure>
