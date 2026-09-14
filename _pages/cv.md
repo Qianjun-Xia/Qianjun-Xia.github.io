@@ -1,23 +1,20 @@
 ---
-layout: archive
-title: ""
+layout: page
+title: "Curriculum Vitae"
 permalink: /cv/
-author_profile: true
+wide: true
 redirect_from:
   - /resume
 ---
 
-{% include base_path %}
-# [Download CV (PDF)](/files/Curriculum_Vitae_Qianjun_XIA.pdf)
+<p>
+  <a class="btn" href="/files/Curriculum_Vitae_Qianjun_XIA.pdf" download>
+    <svg aria-hidden="true"><use href="#i-download"></use></svg>Download PDF
+  </a>
+</p>
 
-<iframe 
-    src="/files/Curriculum_Vitae_Qianjun_XIA.pdf"
-    width="100%" 
-    height="850px"
-    style="border: none;">
-</iframe>
-<!-- <iframe
-    src="https://docs.google.com/gview?embedded=true&url=https://qianjun-xia.github.io/files/Curriculum_Vitae_Qianjun_XIA.pdf"
-    style="width:100%; height:900px; border:0;">
-</iframe> -->
+<iframe class="pdf-frame" src="/files/Curriculum_Vitae_Qianjun_XIA.pdf" title="Curriculum Vitae of Qianjun Xia"></iframe>
 
+<p class="pdf-fallback">
+  <a href="/files/Curriculum_Vitae_Qianjun_XIA.pdf">Open the CV as a PDF</a> — inline preview is disabled on small screens.
+</p>

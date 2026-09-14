@@ -1,12 +1,24 @@
 ---
-title: "Magnetic Actuated Vascular Guidewire Robot with Cosserat-Rod Modeling (To be Submitted)"
+title: "Magnetic Guidewire Robot"
+tagline: "Magnetically actuated vascular guidewire with Cosserat-rod modeling"
 collection: projects
 permalink: /projects/magnetic_wire/
-# date: 2025-11-24
-# venue: "Under review"
+teaser: /images/projects/MagneticWire/teaser.webp
+date: 2024-06-01
+status: "To be Submitted"
+kind: research
+affiliation: "Shanghai Jiao Tong University"
+advisors: "Prof. Dong Wang"
+excerpt: "A hard-magnetic guidewire steered by a permanent magnet on an industrial robot arm, built to cut surgeons' X-ray exposure in minimally invasive cardiovascular procedures. Combines a Cosserat-rod deformation model, a Qt control platform, and vision feedback for autonomous navigation and error recovery."
+role: "Teleoperation framework, Qt/PyQt control platform, Cosserat-rod model, experiments"
+tech: [Cosserat Rod, PyQt, Industrial Robotics, Vision Feedback, Control]
+spire:
+  type: elite
+  rarity: rare
+  cost: 2
+  card_type: skill
+  flavor: "Steer the thread without touching it."
 ---
-![Magnetic_wire teaser](/images/projects/MagneticWire/teaser.webp)
-
 ### Overview
 
 This project develops a magnetically controlled vascular interventional guidewire robot and its control software, aimed at reducing surgeons’ X-ray exposure and improving accuracy in minimally invasive cardiovascular procedures. A hard-magnetic guidewire is actuated by an external permanent magnet mounted on an industrial robot, enabling precise bending and navigation inside tortuous blood vessels.

@@ -1,13 +1,24 @@
 ---
-title: "RoboVoxel: Inferring Soft-Body Physics from Videos (Under Review)"
+title: "RoboVoxel"
+tagline: "Inferring soft-body physics from videos"
 collection: projects
 permalink: /projects/robovoxel/
-# date: 2025-11-24
-# venue: "Under review"
+teaser: /images/projects/RoboVoxel/teaser.webp
+date: 2025-06-01
+status: "Under Review"
+kind: research
+affiliation: "Columbia University · Creative Machines Lab"
+advisors: "Jiong Lin, Prof. Hod Lipson"
+excerpt: "Recasts system identification as video-to-image translation: a video transformer reads a short grayscale clip of a deformable body and predicts a voxel-level parameter field — stiffness, mass, actuator layout — that a spring-mass simulator can replay."
+role: "Dataset generation, model design, training and evaluation"
+tech: [PyTorch, Video Transformer, VAE, Evolution Gym, Physics Simulation]
+spire:
+  type: boss
+  rarity: rare
+  cost: 3
+  card_type: power
+  flavor: "Read the motion. Name the matter."
 ---
-
-![RoboVoxel teaser](/images/projects/RoboVoxel/teaser.webp)
-
 **RoboVoxel** is a project on learning *voxel-level physical properties* and *actuator layouts* of soft bodies directly from short grayscale videos.  
 Instead of hand-tuning parameters in a simulator, we ask a model to infer them from motion, and then check whether those inferred parameters can re-generate similar behavior.
 

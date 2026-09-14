@@ -1,0 +1,81 @@
+# The Spire map. Floors run bottom (1) to top; x is a percentage across the
+# map width. `ref` points at a project permalink so card content stays in
+# _projects and is never duplicated here.
+
+character:
+  name: "Qianjun Xia"
+  class: "The Engineer"
+  subtitle: "Robotics · Control · Robot Learning"
+  hp: 80
+  hp_max: 80
+  gold: 4
+  ascension: "Columbia, M.S. '26"
+
+nodes:
+  - id: start
+    kind: start
+    floor: 1
+    x: 50
+    title: "Neow's Blessing"
+    subtitle: "About"
+    body: about
+
+  - id: knight
+    kind: enemy
+    floor: 2
+    x: 28
+    ref: /projects/hollowknight/
+
+  - id: abb
+    kind: event
+    floor: 2
+    x: 72
+    title: "The Merchant of Machines"
+    subtitle: "Industry"
+    body: internship
+
+  - id: wire
+    kind: elite
+    floor: 3
+    x: 20
+    ref: /projects/magnetic_wire/
+
+  - id: meh
+    kind: elite
+    floor: 3
+    x: 60
+    ref: /projects/robostudio/
+
+  - id: rest
+    kind: rest
+    floor: 4
+    x: 34
+    title: "Campfire"
+    subtitle: "Toolbox"
+    body: skills
+
+  - id: shop
+    kind: shop
+    floor: 4
+    x: 76
+    title: "The Merchant"
+    subtitle: "Curriculum Vitae"
+    body: cv
+
+  - id: boss
+    kind: boss
+    floor: 5
+    x: 50
+    ref: /projects/robovoxel/
+
+edges:
+  - [start, knight]
+  - [start, abb]
+  - [knight, wire]
+  - [knight, meh]
+  - [abb, meh]
+  - [wire, rest]
+  - [meh, rest]
+  - [meh, shop]
+  - [rest, boss]
+  - [shop, boss]

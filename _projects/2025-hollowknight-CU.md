@@ -1,13 +1,24 @@
 ---
-title: "(ORCSE4529) Reinforcement Learning Course Project: Rise of the AI Knight"
+title: "Rise of the AI Knight"
+tagline: "Model-based RL agents for Hollow Knight"
 collection: projects
 permalink: /projects/hollowknight/
-# date: 2025-11-24
-# venue: "Under review"
+teaser: /images/projects/HollowKnight/teaser.webp
+date: 2025-05-01
+status: "Completed"
+kind: course
+course: "ORCSE4529 Reinforcement Learning"
+affiliation: "Columbia University"
+excerpt: "RL agents that learn navigation, combat and evasion in Hollow Knight and Silksong from raw pixels plus game-state variables, drawing on STORM-style Transformer world models and latent imagination."
+role: "State representation, world-model training, evaluation"
+tech: [Reinforcement Learning, World Models, Transformers, Categorical VAE]
+spire:
+  type: enemy
+  rarity: uncommon
+  cost: 1
+  card_type: attack
+  flavor: "No cost too great. Learn the boss pattern."
 ---
-
-![HollowKnight teaser](/images/projects/HollowKnight/teaser.webp)
-
 ## Overview
 
 This project investigates the development of reinforcement learning (RL) agents for the challenging action-platformer games **Hollow Knight** and **Silksong**. We explore whether improved performance, robustness, and training efficiency can be achieved through refined state representations and modern RL architectures.
@@ -41,6 +52,3 @@ Zhang, W., Wang, G., Sun, J., Yuan, Y., & Huang, G. (2023).
 *STORM: Efficient Stochastic Transformer based World Models for Reinforcement Learning.*  
 Advances in Neural Information Processing Systems (NeurIPS 2023).  
 [PDF](https://proceedings.neurips.cc/paper_files/paper/2023/file/5647763d4245b23e6a1cb0a8947b38c9-Paper-Conference.pdf)
-
-
-

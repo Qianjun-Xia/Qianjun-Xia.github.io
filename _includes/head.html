@@ -1,16 +1,73 @@
-{% include base_path %}
+{%- assign page_title = page.title | default: site.title -%}
+{%- if page.url == "/" -%}{%- assign page_title = site.author.name -%}{%- endif -%}
+{%- assign page_desc = page.excerpt | default: page.description | default: site.description | strip_html | normalize_whitespace | truncate: 200 -%}
+{%- assign page_image = page.teaser | default: site.og_image | default: "/images/profile.webp" -%}
 
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-{% include seo.html %}
+<title>{% if page.url == "/" %}{{ site.author.name }} — {{ site.description }}{% else %}{{ page_title }} · {{ site.author.name }}{% endif %}</title>
+<meta name="description" content="{{ page_desc }}">
+<meta name="author" content="{{ site.author.name }}">
+<link rel="canonical" href="{{ page.url | absolute_url }}">
 
-<link href="{% if site.atom_feed.path %}{{ site.atom_feed.path }}{% else %}{{ base_path }}/feed.xml{% endif %}" type="application/atom+xml" rel="alternate" title="{{ site.title }} Feed">
+<meta property="og:type" content="{% if page.collection %}article{% else %}website{% endif %}">
+<meta property="og:site_name" content="{{ site.author.name }}">
+<meta property="og:title" content="{{ page_title }}">
+<meta property="og:description" content="{{ page_desc }}">
+<meta property="og:url" content="{{ page.url | absolute_url }}">
+<meta property="og:image" content="{{ page_image | absolute_url }}">
+<meta name="twitter:card" content="summary_large_image">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="/images/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/images/favicon-32x32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="/images/apple-touch-icon-180x180.png">
+<link rel="manifest" href="/images/manifest.json">
+<link rel="alternate" type="application/atom+xml" title="{{ site.author.name }}" href="{{ '/feed.xml' | absolute_url }}">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+{%- if page.layout == "spire" %}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+{%- else %}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,wght@0,400;0,600;1,400&display=swap">
+{%- endif %}
+
+<link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}">
 
 <script>
-  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  // Apply the saved theme before first paint so there is no flash.
+  (function () {
+    try {
+      var t = localStorage.getItem("theme");
+      if (t === "dark" || t === "light") {
+        document.documentElement.setAttribute("data-theme", t);
+      }
+    } catch (e) {}
+  })();
 </script>
 
-<!-- For all browsers -->
-<link rel="stylesheet" href="{{ base_path }}/assets/css/main.css">
+{%- if site.google_analytics %}
+<script async src="https://www.googletagmanager.com/gtag/js?id={{ site.google_analytics }}"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', '{{ site.google_analytics }}');
+</script>
+{%- endif %}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": {{ site.author.name | jsonify }},
+  "email": {{ site.author.email | jsonify }},
+  "url": {{ site.url | jsonify }},
+  "image": {{ "/images/profile.webp" | absolute_url | jsonify }},
+  "jobTitle": "M.S. Student, Mechanical Engineering",
+  "affiliation": { "@type": "Organization", "name": "Columbia University" },
+  "alumniOf": { "@type": "Organization", "name": "Shanghai Jiao Tong University" },
+  "sameAs": [{% if site.author.github %}{{ "https://github.com/" | append: site.author.github | jsonify }}{% endif %}{% if site.author.linkedin %}, {{ "https://www.linkedin.com/in/" | append: site.author.linkedin | jsonify }}{% endif %}{% if site.author.googlescholar %}, {{ site.author.googlescholar | jsonify }}{% endif %}]
+}
+</script>

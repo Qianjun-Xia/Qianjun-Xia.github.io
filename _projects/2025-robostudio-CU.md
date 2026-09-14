@@ -1,13 +1,26 @@
 ---
-title: "(MECEE4611) Robotics Studio Course Project: A Bipedal Robot M.E.H (w/ Zizai Ma)"
+title: "M.E.H — Bipedal Robot"
+tagline: "A low-cost walking biped built from scratch"
 collection: projects
 permalink: /projects/robostudio/
-# date: 2025-11-24
-# venue: "Under review"
+teaser: /images/projects/RoboticStudio/teaser.webp
+date: 2025-05-01
+status: "Completed"
+kind: course
+course: "MECEE4611 Robotics Studio"
+affiliation: "Columbia University"
+advisors: "Prof. Hod Lipson"
+collaborators: "Zizai Ma"
+excerpt: "A bipedal prototype reaching ~32 cm/s on flat ground under lightweight hardware and low-cost actuation. I owned the control side — gait planning, inverse kinematics, and the software architecture."
+role: "Control algorithms, gait planning, inverse kinematics, software architecture"
+tech: [Inverse Kinematics, Gait Planning, Embedded Control, CAD]
+spire:
+  type: elite
+  rarity: uncommon
+  cost: 2
+  card_type: attack
+  flavor: "Two legs. Thirty-two centimeters a second."
 ---
-
-![RoboticStudio teaser](/images/projects/RoboticStudio/teaser.webp)
-
 This project was completed as part of the MECEE4611 Robotics Studio course in Spring 2025, taught by Prof. Hod Lipson.
 Together with Zizai Ma, we developed a bipedal robotic prototype named M.E.H, integrating custom mechanical design, embedded hardware and motion control.
 
@@ -36,5 +49,3 @@ Through iterative design and testing, our robot achieved a maximum walking speed
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
     allowfullscreen>
 </iframe>
-
-

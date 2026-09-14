@@ -1,0 +1,18 @@
+{%- comment -%}Expects `item` — one entry from site.projects.{%- endcomment -%}
+<article class="card">
+  {%- if item.teaser %}
+  <span class="card__media">
+    <img src="{{ item.teaser | relative_url }}" alt="" loading="lazy" decoding="async">
+  </span>
+  {%- endif %}
+  <div class="card__body">
+    <h3 class="card__title"><a href="{{ item.url | relative_url }}">{{ item.title }}</a></h3>
+    {%- if item.tagline %}<p class="card__tagline">{{ item.tagline }}</p>{%- endif %}
+    {%- if item.excerpt %}<p class="card__excerpt">{{ item.excerpt }}</p>{%- endif %}
+    <div class="card__foot">
+      {%- if item.status %}<span class="chip chip--status">{{ item.status }}</span>{%- endif %}
+      {%- if item.kind %}<span class="chip chip--kind">{{ item.kind }}</span>{%- endif %}
+      {%- for t in item.tech limit: 2 %}<span class="chip">{{ t }}</span>{%- endfor %}
+    </div>
+  </div>
+</article>

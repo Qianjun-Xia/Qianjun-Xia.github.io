@@ -1,0 +1,44 @@
+---
+layout: classic
+---
+<div class="wrap page-head">
+  <a class="back-link" href="{{ '/projects/' | relative_url }}">
+    <svg aria-hidden="true"><use href="#i-arrow-left"></use></svg>All projects
+  </a>
+
+  <h1 class="page-head__title">{{ page.title }}</h1>
+  {%- if page.tagline %}<p class="page-head__tagline">{{ page.tagline }}</p>{%- endif %}
+
+  <div class="page-head__meta">
+    {%- if page.status %}<span class="chip chip--status">{{ page.status }}</span>{%- endif %}
+    {%- for t in page.tech %}<span class="chip">{{ t }}</span>{%- endfor %}
+  </div>
+</div>
+
+<div class="wrap">
+  {%- if page.teaser %}
+  <img class="hero-figure" src="{{ page.teaser | relative_url }}" alt="{{ page.title }}" loading="eager">
+  {%- endif %}
+
+  <div class="factbar">
+    {%- if page.affiliation %}
+    <div class="fact"><div class="fact__key">Where</div><div class="fact__val">{{ page.affiliation }}</div></div>
+    {%- endif %}
+    {%- if page.course %}
+    <div class="fact"><div class="fact__key">Course</div><div class="fact__val">{{ page.course }}</div></div>
+    {%- endif %}
+    {%- if page.advisors %}
+    <div class="fact"><div class="fact__key">Advisors</div><div class="fact__val">{{ page.advisors }}</div></div>
+    {%- endif %}
+    {%- if page.collaborators %}
+    <div class="fact"><div class="fact__key">With</div><div class="fact__val">{{ page.collaborators }}</div></div>
+    {%- endif %}
+    {%- if page.role %}
+    <div class="fact"><div class="fact__key">My role</div><div class="fact__val">{{ page.role }}</div></div>
+    {%- endif %}
+  </div>
+
+  <article class="prose prose--wide">
+    {{ content }}
+  </article>
+</div>

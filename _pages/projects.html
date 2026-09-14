@@ -1,11 +1,14 @@
 ---
-layout: archive
+layout: page
 title: "Projects"
+tagline: "Research, coursework and things I built to find out whether they would work."
 permalink: /projects/
-author_profile: true
+wide: true
 ---
 
-{% include base_path %}
-{% for post in site.projects %}
-  {% include archive-single.html %}
-{% endfor %}
+{% assign projects = site.projects | sort: "date" | reverse %}
+<div class="cards">
+  {%- for item in projects %}
+    {% include project-card.html item=item %}
+  {%- endfor %}
+</div>
