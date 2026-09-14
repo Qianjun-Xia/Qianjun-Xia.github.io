@@ -223,6 +223,42 @@
     }
   }
 
+  function start() {
+    var M = window.Matter;
+    engine = M.Engine.create();
+    engine.gravity.y = 1.1;
+    makeStage();
+    buildWalls();
+    rebuildLedges();
+
+    var scrollQueued = false;
+    window.addEventListener("scroll", function () {
+      if (scrollQueued) return;
+      scrollQueued = true;
+      requestAnimationFrame(function () {
+        scrollQueued = false;
+        placeLedges();
+      });
+    }, { passive: true });
+
+    var resizeTimer;
+    window.addEventListener("resize", function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function () {
+        buildWalls();
+        rebuildLedges();
+      }, 150);
+    });
+
+    // Web fonts land after first paint and move every line box.
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(rebuildLedges);
+    }
+
+    last = performance.now();
+    raf = requestAnimationFrame(tick);
+  }
+
   // ---------------------------------------------------------------- loop
 
   var STEP = 1000 / 60;
