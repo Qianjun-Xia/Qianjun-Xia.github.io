@@ -32,7 +32,7 @@ arms, mouth and body independently. Positioned and driven by drop.js.
     <circle class="gor-skin gor-ear-in" cx="93" cy="43" r="5"/>
 
     <circle class="gor-fur" cx="60" cy="46" r="31"/>
-    <path class="gor-skin" d="M60 28c15 0 23 9 23 20s-10 20-23 20-23-9-23-20 8-20 23-20z"/>
+    <path class="gor-skin gor-muzzle" d="M60 28c15 0 23 9 23 20s-9 24-23 24-23-11-23-24 8-20 23-20z"/>
 
     <g class="gor-brow">
       <path d="M45 36c3-3 8-3 11-1M75 36c-3-3-8-3-11-1" stroke-width="3.2" stroke-linecap="round" fill="none"/>
@@ -43,12 +43,15 @@ arms, mouth and body independently. Positioned and driven by drop.js.
     <circle class="gor-pupil" cx="51.8" cy="43.6" r="2"/>
     <circle class="gor-pupil" cx="69.8" cy="43.6" r="2"/>
 
-    <circle class="gor-nostril" cx="55.5" cy="55" r="1.9"/>
-    <circle class="gor-nostril" cx="64.5" cy="55" r="1.9"/>
+    <circle class="gor-nostril" cx="55.5" cy="52" r="1.9"/>
+    <circle class="gor-nostril" cx="64.5" cy="52" r="1.9"/>
 
-    <!-- The mouth scales open; its own group keeps the origin at its centre. -->
+    <!-- The mouth. Closed it is a flat line across the muzzle; open it is a
+         round maw with a tongue at the bottom. The lip stroke is non-scaling,
+         so it keeps one weight however far the mouth opens. -->
     <g class="gor-mouth">
-      <ellipse class="gor-maw" cx="60" cy="64" rx="10" ry="3.4"/>
+      <ellipse class="gor-maw" cx="60" cy="65" rx="10" ry="2.8" vector-effect="non-scaling-stroke"/>
     </g>
+    <ellipse class="gor-tongue" cx="60" cy="72" rx="7" ry="3.2"/>
   </g>
 </svg>
