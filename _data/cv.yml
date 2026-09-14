@@ -18,19 +18,19 @@ experience:
   - what: "Doctoral Researcher"
     where: "PhysAI Lab, University of British Columbia"
     when: "2026 – Present"
-    note: "Supervised by Prof. Peter Yichen Chen. Simulators of the 3D physical world for physical AI — turning real interaction into physics that a model can act on."
+    note: "Physical AI and simulation."
   - what: "Graduate Researcher"
     where: "Creative Machines Lab, Columbia University"
     when: "Mar 2025 – May 2026"
-    note: "Advised by Jiong Lin and Prof. Hod Lipson. Video-based parameter estimation for deformable bodies and soft robots; generative models for mechanism design."
+    note: "Advised by Jiong Lin and Prof. Hod Lipson. Soft-body parameter estimation from video."
   - what: "Undergraduate Researcher"
     where: "Shanghai Jiao Tong University"
     when: "Sep 2023 – Jul 2024"
-    note: "Advised by Prof. Dong Wang. Magnetic wire-guiding robots for minimally invasive surgery — mechanical design, control, and elastic-rod modeling."
+    note: "Advised by Prof. Dong Wang. Magnetic guidewire robots."
   - what: "Vision Algorithm Intern"
     where: "Shanghai ABB Engineering Co., Ltd"
     when: "Jun 2023 – Sep 2023"
-    note: "Computer vision algorithms for industrial robotic inspection; detection and segmentation pipelines for manufacturing scenes."
+    note: "Computer vision for industrial robotic inspection."
 
 # Grouped skills. Keep each group to a handful of entries so the cards stay legible.
 skills:
