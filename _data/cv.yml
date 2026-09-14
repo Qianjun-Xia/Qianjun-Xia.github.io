@@ -4,7 +4,7 @@
 education:
   - what: "Ph.D., Computer Science"
     where: "University of British Columbia"
-    when: "2026 – Present"
+    when: "Sep 2026 – Present"
     note: "PhysAI Lab, supervised by Prof. Peter Yichen Chen"
   - what: "M.S., Mechanical Engineering (Robotics & Control)"
     where: "Columbia University"
@@ -17,7 +17,7 @@ education:
 experience:
   - what: "Doctoral Researcher"
     where: "PhysAI Lab, University of British Columbia"
-    when: "2026 – Present"
+    when: "Sep 2026 – Present"
     note: "Physical AI and simulation."
   - what: "Graduate Researcher"
     where: "Creative Machines Lab, Columbia University"
