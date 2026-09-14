@@ -132,6 +132,6 @@ const fill = setInterval(() => {
         && left === 0 && gone;
       console.log('\nRESULT:', ok ? 'PASS' : 'FAIL');
       process.exit(ok ? 0 : 1);
-    }, 13000);
+    }, 16000);
   }
 }, 12);

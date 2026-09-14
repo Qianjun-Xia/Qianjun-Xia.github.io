@@ -10,7 +10,7 @@
 
   var MATTER_SRC = "/assets/js/lib/matter.min.js";
   // When the pile reaches this, the gorilla comes and clears it.
-  var MAX_ITEMS = 45;
+  var MAX_ITEMS = 70;
 
   // How long each beat of the gorilla's routine lasts.
   var HOP_MS = 900;
