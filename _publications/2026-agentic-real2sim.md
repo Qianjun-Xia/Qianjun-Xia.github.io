@@ -10,7 +10,7 @@ status_label: "Preprint"
 date: 2026-09-01
 teaser: /images/projects/AgenticReal2Sim/teaser.webp
 teaser_w: 800
-teaser_h: 600
+teaser_h: 360
 arxiv: https://arxiv.org/abs/2607.19190
 code: https://github.com/agentic-real2sim/agentic_real2sim
 site: https://agentic-real2sim.github.io/

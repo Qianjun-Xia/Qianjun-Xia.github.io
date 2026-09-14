@@ -229,14 +229,14 @@
   text-align: center;
   transition: translate 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
 
-  // The teasers are mostly figures whose edges carry meaning, so nothing is
-  // cropped: each shows whole, at its own ratio. Width comes from the img's
-  // own attribute, so a small image renders at its native size instead of
-  // being blown up — the plate just centres it on the panel.
+  // The teasers are mostly figures whose edges carry meaning, so none is
+  // cropped — each keeps its own ratio, and only the height varies down the
+  // list. Width is filled so every plate shares one edge; a teaser smaller
+  // than the column scales up slightly, which costs far less than the ragged
+  // left and right edges of letting each plate size itself.
   img {
-    max-width: 100%;
+    width: 100%;
     height: auto;
-    margin-inline: auto;
   }
 
   &:hover {
@@ -308,6 +308,7 @@
 
 .pub {
   display: grid;
+  align-items: start;
   gap: var(--gap-s) var(--gap-m);
   padding-bottom: var(--gap-l);
   border-bottom: 1.5px solid var(--edge);
@@ -326,13 +327,11 @@
   border: 1.5px solid var(--edge);
   background: var(--panel);
 
-  // Contain, not cover: these are figures at thumbnail size, and cropping
-  // one to a 16:10 box leaves an unreadable fragment.
+  // No fixed box: a figure forced into one either loses its edges to a crop
+  // or floats in bars. It keeps its own ratio and sits at the top of the row.
   img {
     width: 100%;
-    aspect-ratio: 16 / 10;
-    object-fit: contain;
-    padding: 4px;
+    height: auto;
   }
 }
 
