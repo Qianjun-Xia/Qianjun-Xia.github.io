@@ -9,7 +9,14 @@
   "use strict";
 
   var MATTER_SRC = "/assets/js/lib/matter.min.js";
-  var MAX_ITEMS = 70;
+  // When the pile reaches this, the gorilla comes and clears it.
+  var MAX_ITEMS = 45;
+
+  // How long each beat of the gorilla's routine lasts.
+  var HOP_MS = 900;
+  var BEAT_MS = 1200;
+  var SUCK_MS = 4500;   // ceiling; it leaves as soon as the pile is gone
+  var LEAVE_MS = 700;
   var MAX_LEDGES = 140;
   // A prop falling at speed can pass through a body thinner than the distance
   // it covers in one step, so thin ledges are padded. Axis-aligned ones grow
@@ -74,6 +81,8 @@
   var queued = null;
   var raf = 0;
   var last = 0;
+
+  var gorilla = null;   // { el, phase, mouth: {x, y} }
 
   // ---------------------------------------------------------------- setup
 
@@ -277,6 +286,8 @@
       owed -= STEP;
     }
 
+    stepGorilla(now);
+
     for (var i = 0; i < items.length; i++) {
       var b = items[i].body;
       items[i].el.style.transform =
@@ -320,15 +331,139 @@
     M.Composite.add(engine.world, body);
     items.push({ body: body, el: el, half: half });
 
-    if (items.length > MAX_ITEMS) retire(items.shift());
+    if (items.length >= MAX_ITEMS) summonGorilla();
   }
 
-  function retire(item) {
-    item.el.classList.add("is-going");
+  // ---------------------------------------------------------------- gorilla
+
+  // Once the pile is full a gorilla hops in, beats its chest, and inhales the
+  // lot. It runs as a small state machine on timers; the inhale itself is
+  // physics — every prop is pulled toward the mouth each step.
+  function summonGorilla() {
+    if (gorilla) return;
+    var art = document.getElementById("gorilla-art");
+    if (!art) return;                    // page did not ship the artwork
+
+    var el = document.createElement("div");
+    el.className = "gor is-hopping";
+    el.innerHTML = art.innerHTML;
+
+    // It stands where the pile is heaviest, so it reaches for its own mess.
+    var sum = 0;
+    for (var i = 0; i < items.length; i++) sum += items[i].body.position.x;
+    var x = items.length ? sum / items.length : window.innerWidth / 2;
+    el.style.left = Math.max(90, Math.min(window.innerWidth - 90, x)) + "px";
+
+    stage.appendChild(el);
+    gorilla = { el: el, phase: "hop", until: performance.now() + HOP_MS };
+  }
+
+  // The mouth in viewport coordinates, read off the rendered SVG.
+  function mouthAt() {
+    var maw = gorilla.el.querySelector(".gor-maw");
+    if (!maw) return null;
+    var r = maw.getBoundingClientRect();
+    return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+  }
+
+  function setPhase(phase, ms) {
+    gorilla.phase = phase;
+    gorilla.until = performance.now() + ms;
+    gorilla.el.className = "gor is-" + phase;
+  }
+
+  function stepGorilla(now) {
+    if (!gorilla) return;
+
+    if (gorilla.phase === "hop" && now >= gorilla.until) {
+      setPhase("beating", BEAT_MS);
+      return;
+    }
+
+    if (gorilla.phase === "beating" && now >= gorilla.until) {
+      setPhase("sucking", SUCK_MS);
+      return;
+    }
+
+    if (gorilla.phase === "sucking") {
+      inhale();
+      if (items.length === 0 || now >= gorilla.until) {
+        while (items.length) swallow(items.pop());
+        setPhase("leaving", LEAVE_MS);
+      }
+      return;
+    }
+
+    if (gorilla.phase === "leaving" && now >= gorilla.until) {
+      if (gorilla.el.parentNode) gorilla.el.parentNode.removeChild(gorilla.el);
+      gorilla = null;
+    }
+  }
+
+  function inhale() {
+    var M = window.Matter;
+    var mouth = mouthAt();
+    if (!mouth) return;
+
+    for (var i = items.length - 1; i >= 0; i--) {
+      var it = items[i];
+      var p = it.body.position;
+      var dx = mouth.x - p.x;
+      var dy = mouth.y - p.y;
+      var d = Math.sqrt(dx * dx + dy * dy) || 1;
+
+      if (d < 34) {                       // close enough to be swallowed
+        items.splice(i, 1);
+        swallow(it);
+        continue;
+      }
+
+      // Props stop colliding once they are in the draught, so they stream in
+      // rather than dragging across the text they had landed on.
+      //
+      // This clears the collision mask rather than setting isSensor, because
+      // Matter reads isSensor when it creates a contact pair and never again —
+      // a prop already resting on a ledge keeps its existing pair and stays
+      // stuck. The mask is consulted every step, so it takes effect at once.
+      if (!it.sucked) {
+        it.sucked = true;
+        it.body.collisionFilter.mask = 0;
+        it.body.frictionAir = 0.02;      // light damping, so they arrive without orbiting
+        // A little spread per prop, so the pile peels away in a stream rather
+        // than every piece launching on the same frame.
+        it.suck = 0.7 + Math.random() * 0.6;
+        M.Body.setAngularVelocity(it.body, (Math.random() - 0.5) * 0.6);
+      }
+
+      // Cancel the prop's weight first, otherwise the draught is fighting
+      // gravity the whole way up and the far end of the pile never arrives.
+      var lift = it.body.mass * engine.gravity.y * engine.gravity.scale;
+
+      // A near-constant pull, not one that falls off with distance: the props
+      // furthest away are exactly the ones that need help crossing the room,
+      // and the speed cap below is what stops the near ones overshooting.
+      // Air friction caps speed at force / (mass * frictionAir), so this
+      // coefficient is sized against the damping set above.
+      var pull = 0.018 * it.suck * it.body.mass;
+      M.Body.applyForce(it.body, p, {
+        x: (dx / d) * pull,
+        y: (dy / d) * pull - lift
+      });
+
+      // Without a ceiling the pull near the mouth is strong enough to carry a
+      // prop clean past the capture radius in one step, and it never arrives.
+      var v = it.body.velocity;
+      var sp = Math.sqrt(v.x * v.x + v.y * v.y);
+      if (sp > 9) M.Body.setVelocity(it.body, { x: v.x / sp * 9, y: v.y / sp * 9 });
+    }
+  }
+
+  function swallow(item) {
+    item.el.classList.add("is-eaten");
     window.Matter.Composite.remove(engine.world, item.body);
     setTimeout(function () {
       if (item.el.parentNode) item.el.parentNode.removeChild(item.el);
-    }, 420);
+    }, 260);
   }
 
   // ---------------------------------------------------------------- input

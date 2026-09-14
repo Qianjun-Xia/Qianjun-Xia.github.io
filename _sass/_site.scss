@@ -626,11 +626,6 @@
   }
 }
 
-// Oldest props bow out when the pile hits its cap.
-.drop-prop.is-going {
-  opacity: 0;
-  scale: 0.7;
-}
 
 // Marks a project whose page is on another site.
 .out {
@@ -703,4 +698,208 @@
     border: 0;
     display: block;
   }
+}
+
+// ---------------------------------------------- the gorilla
+
+// It arrives when the pile is full: hops in, beats its chest, then opens up
+// and inhales everything. Positioned by drop.js; every colour comes from the
+// page tokens, so it recolours with the palette like the arm illustration.
+.gor {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 150px;
+  z-index: 2;
+  pointer-events: none;
+  transform-origin: 50% 100%;
+  will-change: transform;
+}
+
+.gor__svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+.gor-fur {
+  fill: var(--ink);
+}
+
+.gor-skin {
+  fill: var(--accent);
+  opacity: 0.55;
+}
+
+.gor-ear-in {
+  opacity: 0.75;
+}
+
+.gor-foot {
+  fill: var(--ink);
+}
+
+.gor-arm {
+  stroke: var(--ink);
+  fill: var(--ink);
+  transform-box: view-box;
+}
+
+.gor-arm--l {
+  transform-origin: 36px 80px;
+}
+
+.gor-arm--r {
+  transform-origin: 84px 80px;
+}
+
+.gor-brow {
+  stroke: var(--panel);
+  opacity: 0.5;
+}
+
+.gor-eye {
+  fill: var(--panel);
+}
+
+.gor-pupil,
+.gor-nostril {
+  fill: var(--ink);
+}
+
+.gor-maw {
+  fill: var(--ground);
+  stroke: var(--ink);
+  stroke-width: 2.5;
+}
+
+.gor-mouth,
+.gor-torso,
+.gor-head {
+  transform-box: view-box;
+}
+
+.gor-mouth {
+  transform-origin: 60px 64px;
+}
+
+.gor-torso {
+  transform-origin: 60px 118px;
+}
+
+.gor-head {
+  transform-origin: 60px 74px;
+}
+
+// --- entrance: three bounces up onto the pile ---
+
+.gor.is-hopping {
+  animation: gor-hop 900ms cubic-bezier(0.3, 0.9, 0.4, 1) forwards;
+}
+
+@keyframes gor-hop {
+  0%   { transform: translate(-50%, 130%) scale(0.8); }
+  30%  { transform: translate(-50%, -18%) scale(1.04); }
+  46%  { transform: translate(-50%, 4%) scale(0.94); }
+  66%  { transform: translate(-50%, -12%) scale(1.02); }
+  82%  { transform: translate(-50%, 2%) scale(0.97); }
+  100% { transform: translate(-50%, 0) scale(1); }
+}
+
+// --- chest beating ---
+
+.gor.is-beating {
+  transform: translate(-50%, 0);
+  animation: gor-brace 1200ms ease-in-out;
+}
+
+.gor.is-beating .gor-arm--l {
+  animation: gor-thump-l 400ms ease-in-out 3;
+}
+
+.gor.is-beating .gor-arm--r {
+  animation: gor-thump-r 400ms ease-in-out 3;
+}
+
+.gor.is-beating .gor-torso {
+  animation: gor-puff 400ms ease-in-out 3;
+}
+
+@keyframes gor-brace {
+  0%, 100% { transform: translate(-50%, 0) rotate(0deg); }
+  25%      { transform: translate(-50%, -3%) rotate(-2deg); }
+  75%      { transform: translate(-50%, -3%) rotate(2deg); }
+}
+
+@keyframes gor-thump-l {
+  0%, 100% { transform: rotate(0deg); }
+  40%      { transform: rotate(-38deg); }
+  60%      { transform: rotate(-30deg); }
+}
+
+@keyframes gor-thump-r {
+  0%, 100% { transform: rotate(0deg); }
+  40%      { transform: rotate(38deg); }
+  60%      { transform: rotate(30deg); }
+}
+
+@keyframes gor-puff {
+  0%, 100% { transform: scale(1, 1); }
+  45%      { transform: scale(1.07, 0.95); }
+}
+
+// --- inhaling ---
+
+.gor.is-sucking {
+  transform: translate(-50%, 0);
+  animation: gor-heave 380ms ease-in-out infinite;
+}
+
+.gor.is-sucking .gor-mouth {
+  animation: gor-gape 300ms cubic-bezier(0.3, 1.4, 0.5, 1) forwards;
+}
+
+.gor.is-sucking .gor-head {
+  animation: gor-tilt 300ms ease-out forwards;
+}
+
+.gor.is-sucking .gor-arm--l {
+  transform: rotate(-58deg);
+}
+
+.gor.is-sucking .gor-arm--r {
+  transform: rotate(58deg);
+}
+
+@keyframes gor-gape {
+  to { transform: scale(1.5, 5.4); }
+}
+
+@keyframes gor-tilt {
+  to { transform: translateY(-2px) scale(1.04); }
+}
+
+@keyframes gor-heave {
+  0%, 100% { transform: translate(-50%, 0) scale(1, 1); }
+  50%      { transform: translate(-50%, -1%) scale(1.02, 0.99); }
+}
+
+// --- exit ---
+
+.gor.is-leaving {
+  animation: gor-leave 700ms cubic-bezier(0.5, 0, 0.8, 0.4) forwards;
+}
+
+@keyframes gor-leave {
+  0%   { transform: translate(-50%, 0) scale(1); }
+  22%  { transform: translate(-50%, -24%) scale(1.06); }
+  100% { transform: translate(-50%, 135%) scale(0.82); }
+}
+
+// A prop being swallowed shrinks into the mouth rather than just vanishing.
+.drop-prop.is-eaten {
+  opacity: 0;
+  scale: 0.25;
+  transition: opacity 0.22s ease-in, scale 0.22s ease-in;
 }

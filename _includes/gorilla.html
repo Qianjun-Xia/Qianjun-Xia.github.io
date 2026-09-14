@@ -1,0 +1,54 @@
+{%- comment -%}
+The gorilla that clears the pile. Drawn in the page's own tokens like the
+arm illustration, and split into named parts so the animation can move
+arms, mouth and body independently. Positioned and driven by drop.js.
+{%- endcomment -%}
+<svg class="gor__svg" viewBox="0 0 120 132" aria-hidden="true" focusable="false">
+  <!-- feet -->
+  <ellipse class="gor-foot" cx="43" cy="121" rx="14" ry="9"/>
+  <ellipse class="gor-foot" cx="77" cy="121" rx="14" ry="9"/>
+
+  <!-- arms, behind the body so the hands land on the chest -->
+  <g class="gor-arm gor-arm--l">
+    <path d="M36 80 C22 84 18 98 26 108" stroke-width="13" stroke-linecap="round" fill="none"/>
+    <circle cx="27" cy="108" r="8.5"/>
+  </g>
+  <g class="gor-arm gor-arm--r">
+    <path d="M84 80 C98 84 102 98 94 108" stroke-width="13" stroke-linecap="round" fill="none"/>
+    <circle cx="93" cy="108" r="8.5"/>
+  </g>
+
+  <!-- body -->
+  <g class="gor-torso">
+    <ellipse class="gor-fur" cx="60" cy="92" rx="29" ry="27"/>
+    <ellipse class="gor-skin" cx="60" cy="95" rx="18" ry="17"/>
+  </g>
+
+  <!-- head -->
+  <g class="gor-head">
+    <circle class="gor-fur" cx="27" cy="43" r="10.5"/>
+    <circle class="gor-fur" cx="93" cy="43" r="10.5"/>
+    <circle class="gor-skin gor-ear-in" cx="27" cy="43" r="5"/>
+    <circle class="gor-skin gor-ear-in" cx="93" cy="43" r="5"/>
+
+    <circle class="gor-fur" cx="60" cy="46" r="31"/>
+    <path class="gor-skin" d="M60 28c15 0 23 9 23 20s-10 20-23 20-23-9-23-20 8-20 23-20z"/>
+
+    <g class="gor-brow">
+      <path d="M45 36c3-3 8-3 11-1M75 36c-3-3-8-3-11-1" stroke-width="3.2" stroke-linecap="round" fill="none"/>
+    </g>
+
+    <circle class="gor-eye" cx="51" cy="43" r="4.2"/>
+    <circle class="gor-eye" cx="69" cy="43" r="4.2"/>
+    <circle class="gor-pupil" cx="51.8" cy="43.6" r="2"/>
+    <circle class="gor-pupil" cx="69.8" cy="43.6" r="2"/>
+
+    <circle class="gor-nostril" cx="55.5" cy="55" r="1.9"/>
+    <circle class="gor-nostril" cx="64.5" cy="55" r="1.9"/>
+
+    <!-- The mouth scales open; its own group keeps the origin at its centre. -->
+    <g class="gor-mouth">
+      <ellipse class="gor-maw" cx="60" cy="64" rx="10" ry="3.4"/>
+    </g>
+  </g>
+</svg>

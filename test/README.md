@@ -14,3 +14,11 @@ node test/drop.test.js
 ```
 
 Exits non-zero on failure.
+
+`gorilla.test.js` fills the pile past its cap and asserts that the gorilla runs
+its whole routine — hops in, beats, inhales every prop, leaves and removes
+itself — with nothing left on the stage.
+
+```sh
+node test/gorilla.test.js
+```
