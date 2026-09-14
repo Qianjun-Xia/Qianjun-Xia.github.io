@@ -92,7 +92,20 @@ const fill = setInterval(() => {
     clearInterval(fill);
     console.log('clicks fired   :', n);
     console.log('props on stage :', window.document.querySelectorAll('.drop-prop').length);
-    console.log('gorilla present:', !!window.document.querySelector('.gor'));
+    const g0 = window.document.querySelector('.gor');
+    console.log('gorilla present:', !!g0);
+    if (g0) {
+      const gx = parseFloat(g0.style.left);
+      const xs = [...window.document.querySelectorAll('.drop-prop')].map(el => {
+        const m = /translate\(([-\d.]+)px/.exec(el.style.transform); return m ? +m[1] : null;
+      }).filter(v => v !== null);
+      const near = Math.min(...xs.map(x => Math.abs(x - gx)));
+      console.log('gorilla stands :', gx + 'px   nearest prop ' + Math.round(near) + 'px away');
+      // content boxes stubbed in this harness, bottom-most is land__foot at y 520-544
+      console.log('viewport       :', window.innerWidth + 'x' + window.innerHeight +
+                  '   its footprint spans x ' + Math.round(gx-78) + '–' + Math.round(gx+78) +
+                  ', y ' + (window.innerHeight-150) + '–' + window.innerHeight);
+    }
 
     setTimeout(() => {
       clearInterval(watch);
@@ -108,7 +121,7 @@ const fill = setInterval(() => {
       const gone = !window.document.querySelector('.gor');
       const clear = samples.find(s => s.n === 0);
       console.log('\nremaining over time:', samples.filter((_,i)=> i%3===0).map(s => s.n).join(' '));
-      console.log('pile cleared in    :', clear ? clear.t + 'ms' : 'not cleared (swept at timeout)');
+      console.log('inhale lasted      :', (samples.length * 40) + 'ms over ' + samples.length + ' samples');
       console.log('phases seen    :', phases.join(' -> '));
       console.log('props left     :', left);
       console.log('gorilla left   :', gone);
@@ -119,6 +132,6 @@ const fill = setInterval(() => {
         && left === 0 && gone;
       console.log('\nRESULT:', ok ? 'PASS' : 'FAIL');
       process.exit(ok ? 0 : 1);
-    }, 9000);
+    }, 13000);
   }
 }, 12);

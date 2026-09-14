@@ -15,7 +15,8 @@
   // How long each beat of the gorilla's routine lasts.
   var HOP_MS = 900;
   var BEAT_MS = 1200;
-  var SUCK_MS = 4500;   // ceiling; it leaves as soon as the pile is gone
+  var SUCK_MS = 6500;   // ceiling; it leaves as soon as the pile is gone
+  var PEEL_MS = 1400;   // spread of the moment each prop is caught
   var LEAVE_MS = 700;
   var MAX_LEDGES = 140;
   // A prop falling at speed can pass through a body thinner than the distance
@@ -348,14 +349,59 @@
     el.className = "gor is-hopping";
     el.innerHTML = art.innerHTML;
 
-    // It stands where the pile is heaviest, so it reaches for its own mess.
-    var sum = 0;
-    for (var i = 0; i < items.length; i++) sum += items[i].body.position.x;
-    var x = items.length ? sum / items.length : window.innerWidth / 2;
-    el.style.left = Math.max(90, Math.min(window.innerWidth - 90, x)) + "px";
+    el.style.left = pickSpot() + "px";
 
     stage.appendChild(el);
     gorilla = { el: el, phase: "hop", until: performance.now() + HOP_MS };
+  }
+
+  // Where along the bottom edge the gorilla should stand: clear of the page's
+  // own content, and as far from the pile as that allows.
+  //
+  // Scoring a handful of candidates is enough and costs nothing — fifteen
+  // positions against at most 45 props and 140 ledges, once, when it is
+  // summoned. A continuous optimum would cost far more and look no different.
+  var GOR_HALF_W = 78;
+  var GOR_H = 150;
+
+  function pickSpot() {
+    var vw = window.innerWidth;
+    var top = window.innerHeight - GOR_H;
+    var lo = GOR_HALF_W + 8;
+    var hi = vw - GOR_HALF_W - 8;
+    if (hi < lo) return vw / 2;
+
+    var best = null;
+
+    for (var n = 0; n < 15; n++) {
+      var x = lo + (hi - lo) * (n / 14);
+
+      // Would it stand over something on the page?
+      var covers = false;
+      for (var i = 0; i < ledges.length; i++) {
+        var b = ledges[i].body.bounds;
+        if (b.max.y > top && b.max.x > x - GOR_HALF_W && b.min.x < x + GOR_HALF_W) {
+          covers = true;
+          break;
+        }
+      }
+
+      // How far is the nearest prop? The pile sits on the floor, so the
+      // horizontal gap is the one that matters.
+      var near = Infinity;
+      for (var j = 0; j < items.length; j++) {
+        var gap = Math.abs(items[j].body.position.x - x);
+        if (gap < near) near = gap;
+      }
+      if (near === Infinity) near = vw;
+
+      // Covering content is disqualifying, but never fatal: if the page fills
+      // the whole bottom edge, the least bad spot still wins.
+      var score = near - (covers ? 1e6 : 0);
+      if (!best || score > best.score) best = { x: x, score: score };
+    }
+
+    return Math.round(best.x);
   }
 
   // The mouth in viewport coordinates, read off the rendered SVG.
@@ -386,7 +432,7 @@
     }
 
     if (gorilla.phase === "sucking") {
-      inhale();
+      inhale(now);
       if (items.length === 0 || now >= gorilla.until) {
         while (items.length) swallow(items.pop());
         setPhase("leaving", LEAVE_MS);
@@ -400,13 +446,19 @@
     }
   }
 
-  function inhale() {
+  function inhale(now) {
     var M = window.Matter;
     var mouth = mouthAt();
     if (!mouth) return;
 
     for (var i = items.length - 1; i >= 0; i--) {
       var it = items[i];
+
+      // Each prop is caught a moment after the last, so the pile is drawn off
+      // as a stream instead of the whole heap lifting on one frame.
+      if (it.suckAt === undefined) it.suckAt = now + Math.random() * PEEL_MS;
+      if (now < it.suckAt) continue;
+
       var p = it.body.position;
       var dx = mouth.x - p.x;
       var dy = mouth.y - p.y;
@@ -444,7 +496,7 @@
       // and the speed cap below is what stops the near ones overshooting.
       // Air friction caps speed at force / (mass * frictionAir), so this
       // coefficient is sized against the damping set above.
-      var pull = 0.018 * it.suck * it.body.mass;
+      var pull = 0.0042 * it.suck * it.body.mass;
       M.Body.applyForce(it.body, p, {
         x: (dx / d) * pull,
         y: (dy / d) * pull - lift
@@ -454,7 +506,7 @@
       // prop clean past the capture radius in one step, and it never arrives.
       var v = it.body.velocity;
       var sp = Math.sqrt(v.x * v.x + v.y * v.y);
-      if (sp > 9) M.Body.setVelocity(it.body, { x: v.x / sp * 9, y: v.y / sp * 9 });
+      if (sp > 4.5) M.Body.setVelocity(it.body, { x: v.x / sp * 4.5, y: v.y / sp * 4.5 });
     }
   }
 
