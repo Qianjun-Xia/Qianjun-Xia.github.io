@@ -327,11 +327,11 @@
   border: 1.5px solid var(--edge);
   background: var(--panel);
 
-  // No fixed box: a figure forced into one either loses its edges to a crop
-  // or floats in bars. It keeps its own ratio and sits at the top of the row.
+  // Same ratio as the plates, for the same reason.
   img {
     width: 100%;
-    height: auto;
+    aspect-ratio: 12 / 5;
+    object-fit: cover;
   }
 }
 

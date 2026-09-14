@@ -5,7 +5,7 @@ collection: projects
 permalink: /projects/hollowknight/
 teaser: /images/projects/HollowKnight/teaser.webp
 teaser_w: 1920
-teaser_h: 1080
+teaser_h: 800
 date: 2025-05-01
 status: "Completed"
 kind: course

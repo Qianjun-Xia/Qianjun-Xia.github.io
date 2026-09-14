@@ -4,7 +4,7 @@ tagline: "A low-cost walking biped built from scratch"
 collection: projects
 permalink: /projects/robostudio/
 teaser: /images/projects/RoboticStudio/teaser.webp
-teaser_w: 1920
+teaser_w: 1783
 teaser_h: 743
 date: 2025-05-01
 status: "Completed"
