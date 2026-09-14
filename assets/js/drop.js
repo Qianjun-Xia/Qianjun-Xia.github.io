@@ -16,7 +16,7 @@
   var HOP_MS = 900;
   var BEAT_MS = 1200;
   var SUCK_MS = 6500;   // ceiling; it leaves as soon as the pile is gone
-  var PEEL_MS = 1400;   // spread of the moment each prop is caught
+  var PEEL_MS = 800;   // spread of the moment each prop is caught
   var LEAVE_MS = 700;
   var MAX_LEDGES = 140;
   // A prop falling at speed can pass through a body thinner than the distance
@@ -496,7 +496,7 @@
       // and the speed cap below is what stops the near ones overshooting.
       // Air friction caps speed at force / (mass * frictionAir), so this
       // coefficient is sized against the damping set above.
-      var pull = 0.0042 * it.suck * it.body.mass;
+      var pull = 0.0062 * it.suck * it.body.mass;
       M.Body.applyForce(it.body, p, {
         x: (dx / d) * pull,
         y: (dy / d) * pull - lift
@@ -506,7 +506,7 @@
       // prop clean past the capture radius in one step, and it never arrives.
       var v = it.body.velocity;
       var sp = Math.sqrt(v.x * v.x + v.y * v.y);
-      if (sp > 4.5) M.Body.setVelocity(it.body, { x: v.x / sp * 4.5, y: v.y / sp * 4.5 });
+      if (sp > 5.5) M.Body.setVelocity(it.body, { x: v.x / sp * 5.5, y: v.y / sp * 5.5 });
     }
   }
 
