@@ -1,142 +1,28 @@
 ---
-layout: classic
+layout: base
 ---
-{%- assign projects = site.projects | sort: "date" | reverse -%}
+<main id="main" class="surface">
+  <section class="land">
+    <div class="wrap land__in">
+      <div class="land__art">{% include arm.html %}</div>
 
-<section class="wrap hero">
-  <div class="hero__grid">
-    <div>
-      <h1 class="hero__name">{{ site.author.name }}</h1>
-      <p class="hero__role">{{ page.role_line }}</p>
+      <h1 class="land__name">{{ site.author.name | split: " " | join: "<br>" }}</h1>
+      <p class="land__tag">{{ page.tagline }}</p>
 
-      <div class="hero__blurb">
-        {{ content }}
-      </div>
+      <nav class="land__nav" aria-label="Sections">
+        <ol>
+          {%- for item in site.data.navigation.main %}
+          <li><a href="{{ item.url | relative_url }}">{{ item.title }}</a></li>
+          {%- endfor %}
+        </ol>
+      </nav>
 
-      <ul class="rail">
-        {%- if site.author.email %}
-        <li><a href="mailto:{{ site.author.email }}"><svg aria-hidden="true"><use href="#i-mail"></use></svg>Email</a></li>
-        {%- endif %}
-        {%- if site.author.github %}
-        <li><a href="https://github.com/{{ site.author.github }}" rel="me"><svg aria-hidden="true"><use href="#i-github"></use></svg>GitHub</a></li>
-        {%- endif %}
-        {%- if site.author.linkedin %}
-        <li><a href="https://www.linkedin.com/in/{{ site.author.linkedin }}" rel="me"><svg aria-hidden="true"><use href="#i-linkedin"></use></svg>LinkedIn</a></li>
-        {%- endif %}
-        {%- if site.author.googlescholar %}
-        <li><a href="{{ site.author.googlescholar }}"><svg aria-hidden="true"><use href="#i-scholar"></use></svg>Scholar</a></li>
-        {%- endif %}
-        <li><a href="{{ '/cv/' | relative_url }}"><svg aria-hidden="true"><use href="#i-doc"></use></svg>CV</a></li>
-        {%- if site.author.location %}
-        <li><a href="#" aria-disabled="true" tabindex="-1" style="pointer-events:none"><svg aria-hidden="true"><use href="#i-pin"></use></svg>{{ site.author.location }}</a></li>
-        {%- endif %}
-      </ul>
+      <p class="land__foot">
+        {{ site.author.employer }} · {% if site.author.email %}<a href="mailto:{{ site.author.email }}">Email</a> · {% endif %}
+        {%- if site.author.github %}<a href="https://github.com/{{ site.author.github }}">GitHub</a>{% endif %}
+        {%- if site.author.googlescholar %} · <a href="{{ site.author.googlescholar }}">Scholar</a>{% endif %}
+        {%- if site.author.linkedin %} · <a href="https://www.linkedin.com/in/{{ site.author.linkedin }}">LinkedIn</a>{% endif %}
+      </p>
     </div>
-
-    <img class="hero__portrait"
-         src="{{ '/images/profile.webp' | relative_url }}"
-         alt="Portrait of {{ site.author.name }}"
-         width="800" height="600">
-  </div>
-</section>
-
-{%- assign pubs = site.publications -%}
-{%- if pubs and pubs.size > 0 %}
-{%- assign pubs = pubs | sort: "date" | reverse -%}
-<section class="wrap section" id="publications">
-  <div class="section__head">
-    <div>
-      <span class="section__kicker">Research output</span>
-      <h2 class="section__title">Publications</h2>
-    </div>
-    <a class="section__link" href="{{ '/publications/' | relative_url }}">All publications</a>
-  </div>
-
-  <div class="pub-list">
-    {%- for item in pubs limit: 3 %}
-      {% include publication-item.html item=item %}
-    {%- endfor %}
-  </div>
-</section>
-{%- endif %}
-
-<section class="wrap section" id="projects">
-  <div class="section__head">
-    <div>
-      <span class="section__kicker">Selected work</span>
-      <h2 class="section__title">Projects</h2>
-    </div>
-    <a class="section__link" href="{{ '/projects/' | relative_url }}">All projects</a>
-  </div>
-
-  <div class="cards">
-    {%- for item in projects limit: 4 %}
-      {% include project-card.html item=item %}
-    {%- endfor %}
-  </div>
-</section>
-
-<section class="wrap section" id="experience">
-  <div class="section__head">
-    <div>
-      <span class="section__kicker">Where I have worked</span>
-      <h2 class="section__title">Experience</h2>
-    </div>
-  </div>
-
-  <div class="timeline">
-    {%- for e in site.data.cv.experience %}
-    <div class="entry">
-      <div class="entry__when">{{ e.when }}</div>
-      <div>
-        <div class="entry__what">{{ e.what }}</div>
-        <div class="entry__where">{{ e.where }}</div>
-        {%- if e.note %}<div class="entry__note">{{ e.note }}</div>{%- endif %}
-      </div>
-    </div>
-    {%- endfor %}
-  </div>
-</section>
-
-<section class="wrap section" id="education">
-  <div class="section__head">
-    <div>
-      <span class="section__kicker">Background</span>
-      <h2 class="section__title">Education</h2>
-    </div>
-    <a class="section__link" href="{{ '/cv/' | relative_url }}">Full CV</a>
-  </div>
-
-  <div class="timeline">
-    {%- for e in site.data.cv.education %}
-    <div class="entry">
-      <div class="entry__when">{{ e.when }}</div>
-      <div>
-        <div class="entry__what">{{ e.what }}</div>
-        <div class="entry__where">{{ e.where }}</div>
-        {%- if e.note %}<div class="entry__note">{{ e.note }}</div>{%- endif %}
-      </div>
-    </div>
-    {%- endfor %}
-  </div>
-</section>
-
-<section class="wrap section" id="skills">
-  <div class="section__head">
-    <div>
-      <span class="section__kicker">Toolbox</span>
-      <h2 class="section__title">Skills</h2>
-    </div>
-  </div>
-
-  <div class="timeline">
-    {%- for s in site.data.cv.skills %}
-    <div class="entry">
-      <div class="entry__when">{{ s.group }}</div>
-      <div class="card__foot" style="padding-top:0">
-        {%- for i in s.items %}<span class="chip">{{ i }}</span>{%- endfor %}
-      </div>
-    </div>
-    {%- endfor %}
-  </div>
-</section>
+  </section>
+</main>

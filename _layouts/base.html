@@ -3,10 +3,9 @@
   <head>
     {% include head.html %}
   </head>
-  <body class="{{ page.body_class }}">
+  <body>
     <a class="skip-link" href="#main">Skip to content</a>
     {% include icons.html %}
     {{ content }}
-    <script src="{{ '/assets/js/site.js' | relative_url }}" defer></script>
   </body>
 </html>

@@ -1,14 +1,32 @@
 ---
-layout: page
+layout: inner
 title: "Projects"
-tagline: "Research, coursework and things I built to find out whether they would work."
+tagline: "Robots I designed, built and controlled — and the models that explain them."
 permalink: /projects/
-wide: true
 ---
 
-{% assign projects = site.projects | sort: "date" | reverse %}
-<div class="cards">
-  {%- for item in projects %}
-    {% include project-card.html item=item %}
-  {%- endfor %}
+<div class="wrap head">
+  <a class="back" href="{{ '/' | relative_url }}">← {{ site.author.name }}</a>
+  <h1 class="head__title">{{ page.title }}</h1>
+  <p class="head__tag">{{ page.tagline }}</p>
+</div>
+
+<div class="wrap">
+  {% assign projects = site.projects | sort: "date" | reverse %}
+  <ul class="plates">
+    {%- for item in projects %}
+    <li>
+      {%- if item.teaser %}
+      <a class="plate__img" href="{{ item.url | relative_url }}">
+        <img src="{{ item.teaser | relative_url }}" alt="{{ item.title }}" loading="lazy" decoding="async">
+      </a>
+      {%- endif %}
+      <div class="plate__links">
+        <a class="plate__name" href="{{ item.url | relative_url }}">{{ item.title }}</a>
+        {%- if item.tagline %}<span class="plate__meta">{{ item.tagline }}</span>{%- endif %}
+        {%- if item.status %}<span class="badge push">{{ item.status }}</span>{%- endif %}
+      </div>
+    </li>
+    {%- endfor %}
+  </ul>
 </div>

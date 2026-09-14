@@ -1,12 +1,14 @@
-# Header navigation. Order here is the order on the site.
-# Remove an entry to hide it from the header; the page stays reachable by URL.
+# The numbered index on the landing page, and the header nav on
+# inner pages. Order here is the order shown.
 
 main:
-  - title: "Publications"
-    url: /publications/
-
+  - title: "Research"
+    url: /research/
   - title: "Projects"
     url: /projects/
-
+  - title: "Publications"
+    url: /publications/
   - title: "CV"
     url: /cv/
+  - title: "About"
+    url: /about/

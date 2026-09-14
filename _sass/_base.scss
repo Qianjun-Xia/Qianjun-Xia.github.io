@@ -1,5 +1,5 @@
 // =============================================================
-// Reset + element defaults shared by both presentations.
+// Reset and element defaults.
 // =============================================================
 
 *,
@@ -28,13 +28,12 @@ html {
 
 body {
   margin: 0;
-  background: var(--bg);
+  background: var(--ground);
   color: var(--ink);
-  font-family: var(--font-sans);
+  font-family: var(--body);
   font-size: var(--step-0);
-  line-height: 1.65;
+  line-height: 1.7;
   -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
 }
 
 h1,
@@ -42,9 +41,10 @@ h2,
 h3,
 h4 {
   margin: 0;
-  line-height: 1.2;
-  font-weight: 650;
-  letter-spacing: -0.015em;
+  font-family: var(--display);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
   text-wrap: balance;
 }
 
@@ -60,11 +60,11 @@ pre {
 a {
   color: var(--accent);
   text-decoration-thickness: 1px;
-  text-underline-offset: 0.18em;
+  text-underline-offset: 0.2em;
 }
 
 a:hover {
-  color: var(--accent-soft);
+  color: var(--ink);
 }
 
 img,
@@ -77,11 +77,12 @@ iframe {
 img,
 video {
   height: auto;
+  display: block;
 }
 
 hr {
   border: 0;
-  border-top: 1px solid var(--border);
+  border-top: 1.5px solid var(--edge);
   margin: var(--gap-l) 0;
 }
 
@@ -89,25 +90,27 @@ code,
 kbd,
 samp,
 pre {
-  font-family: var(--font-mono);
-  font-size: 0.9em;
+  font-family: var(--mono);
+  font-size: 0.88em;
 }
 
 code {
-  background: var(--bg-sunken);
-  border-radius: 4px;
-  padding: 0.15em 0.38em;
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  border-radius: 5px;
+  padding: 0.1em 0.36em;
 }
 
 pre {
-  background: var(--bg-sunken);
-  border: 1px solid var(--border);
+  background: var(--panel);
+  border: 1.5px solid var(--edge);
   border-radius: var(--radius-s);
   padding: var(--gap-m);
   overflow-x: auto;
 
   code {
     background: none;
+    border: 0;
     padding: 0;
   }
 }
@@ -115,7 +118,7 @@ pre {
 blockquote {
   border-left: 3px solid var(--accent);
   padding-left: var(--gap-m);
-  color: var(--ink-soft);
+  color: var(--soft);
   font-style: italic;
 }
 
@@ -128,14 +131,13 @@ th,
 td {
   text-align: left;
   padding: var(--gap-s);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1.5px solid var(--edge);
 }
 
-// Accessible focus ring everywhere.
 :focus-visible {
   outline: 2px solid var(--accent);
-  outline-offset: 2px;
-  border-radius: 3px;
+  outline-offset: 3px;
+  border-radius: 4px;
 }
 
 .visually-hidden {
@@ -155,11 +157,12 @@ td {
   left: var(--gap-s);
   top: -4rem;
   z-index: 100;
-  background: var(--bg-raised);
+  background: var(--panel);
   color: var(--ink);
-  border: 1px solid var(--border-strong);
+  border: 1.5px solid var(--edge);
   border-radius: var(--radius-s);
   padding: var(--gap-s) var(--gap-m);
+  text-decoration: none;
   transition: top 0.15s ease;
 
   &:focus {
@@ -167,7 +170,35 @@ td {
   }
 }
 
-// Wide media inside prose may scroll rather than blow out the page.
-.scroll-x {
-  overflow-x: auto;
+// Every page lays its content over this, so the weave sits
+// behind the content rather than on top of it.
+.surface {
+  position: relative;
+}
+
+.surface::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  @include weave;
+}
+
+.surface > * {
+  position: relative;
+  z-index: 1;
+}
+
+.wrap {
+  width: 100%;
+  max-width: var(--page);
+  margin-inline: auto;
+  padding-inline: var(--gap-m);
+}
+
+@media (min-width: 40rem) {
+  .wrap {
+    padding-inline: var(--gap-l);
+  }
 }

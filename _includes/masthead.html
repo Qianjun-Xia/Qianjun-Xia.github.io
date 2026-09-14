@@ -1,23 +1,11 @@
-<header class="site-head">
-  <div class="wrap site-head__inner">
-    <a class="site-head__brand" href="{{ '/' | relative_url }}">{{ site.author.name }}</a>
-
-    <nav class="site-nav" aria-label="Primary">
+<header class="bar">
+  <div class="wrap bar__in">
+    <a class="bar__mark" href="{{ '/' | relative_url }}">{{ site.author.name }}</a>
+    <nav class="bar__nav" aria-label="Primary">
       {%- for item in site.data.navigation.main %}
       <a href="{{ item.url | relative_url }}"
          {% if page.url == item.url %}aria-current="page"{% endif %}>{{ item.title }}</a>
       {%- endfor %}
-
-      <a class="spire-door" href="{{ '/spire/' | relative_url }}" title="A Slay the Spire styled version of this site">
-        <svg aria-hidden="true"><use href="#i-spire"></use></svg>
-        <span class="spire-door__label">Enter the Spire</span>
-      </a>
-
-      <button class="icon-btn" id="theme-toggle" type="button"
-              aria-label="Switch between light and dark theme">
-        <svg class="icon-sun" aria-hidden="true"><use href="#i-sun"></use></svg>
-        <svg class="icon-moon" aria-hidden="true" hidden><use href="#i-moon"></use></svg>
-      </button>
     </nav>
   </div>
 </header>

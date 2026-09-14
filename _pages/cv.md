@@ -8,13 +8,12 @@ redirect_from:
 ---
 
 <p>
-  <a class="btn" href="/files/Curriculum_Vitae_Qianjun_XIA.pdf" download>
-    <svg aria-hidden="true"><use href="#i-download"></use></svg>Download PDF
-  </a>
+  <a class="btn" href="/files/Curriculum_Vitae_Qianjun_XIA.pdf" download>Download PDF</a>
+  <a class="btn btn--ghost" href="/">← Home</a>
 </p>
 
 <iframe class="pdf-frame" src="/files/Curriculum_Vitae_Qianjun_XIA.pdf" title="Curriculum Vitae of Qianjun Xia"></iframe>
 
 <p class="pdf-fallback">
-  <a href="/files/Curriculum_Vitae_Qianjun_XIA.pdf">Open the CV as a PDF</a> — inline preview is disabled on small screens.
+  <a href="/files/Curriculum_Vitae_Qianjun_XIA.pdf">Open the CV as a PDF</a> — inline preview is off on small screens.
 </p>
