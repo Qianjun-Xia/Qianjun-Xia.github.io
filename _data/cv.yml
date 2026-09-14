@@ -9,11 +9,10 @@ education:
   - what: "M.S., Mechanical Engineering (Robotics & Control)"
     where: "Columbia University"
     when: "Sep 2024 – May 2026"
-    note: "GPA 4.12 / 4.0"
   - what: "B.S., Mechanical Engineering"
     where: "Shanghai Jiao Tong University"
     when: "Sep 2020 – Jun 2024"
-    note: "Double major in Mathematics and Applied Mathematics · GPA 82.76 / 100"
+    note: "Double major in Mathematics and Applied Mathematics"
 
 experience:
   - what: "Doctoral Researcher"
