@@ -7,7 +7,9 @@ name is bolded inside the author list so it is findable at a glance.
 <article class="pub">
   {%- if item.teaser %}
   <a class="pub__thumb" href="{{ item.url | relative_url }}">
-    <img src="{{ item.teaser | relative_url }}" alt="" loading="lazy" decoding="async">
+    <img src="{{ item.teaser | relative_url }}" alt=""
+         {% if item.teaser_w %}width="{{ item.teaser_w }}" height="{{ item.teaser_h }}"{% endif %}
+         loading="lazy" decoding="async">
   </a>
   {%- endif %}
 

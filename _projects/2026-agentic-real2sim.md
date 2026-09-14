@@ -5,6 +5,8 @@ collection: projects
 permalink: /projects/agentic-real2sim/
 external: https://agentic-real2sim.github.io/
 teaser: /images/projects/AgenticReal2Sim/teaser.webp
+teaser_w: 800
+teaser_h: 600
 date: 2026-09-01
 status: "arXiv"
 kind: research

@@ -21,7 +21,9 @@ permalink: /projects/
     <li>
       {%- if item.teaser %}
       <a class="plate__img" href="{{ href }}"{% if item.external %} rel="noopener"{% endif %}>
-        <img src="{{ item.teaser | relative_url }}" alt="{{ item.title }}" loading="lazy" decoding="async">
+        <img src="{{ item.teaser | relative_url }}" alt="{{ item.title }}"
+             {% if item.teaser_w %}width="{{ item.teaser_w }}" height="{{ item.teaser_h }}"{% endif %}
+             loading="lazy" decoding="async">
       </a>
       {%- endif %}
       <div class="plate__links">

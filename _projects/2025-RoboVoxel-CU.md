@@ -4,6 +4,8 @@ tagline: "Inferring soft-body physics from videos"
 collection: projects
 permalink: /projects/robovoxel/
 teaser: /images/projects/RoboVoxel/teaser.webp
+teaser_w: 1920
+teaser_h: 793
 date: 2025-06-01
 status: "Under Review"
 kind: research

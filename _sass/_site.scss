@@ -226,12 +226,17 @@
   overflow: hidden;
   background: var(--panel);
   border: 1.5px solid var(--edge);
+  text-align: center;
   transition: translate 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
 
+  // The teasers are mostly figures whose edges carry meaning, so nothing is
+  // cropped: each shows whole, at its own ratio. Width comes from the img's
+  // own attribute, so a small image renders at its native size instead of
+  // being blown up — the plate just centres it on the panel.
   img {
-    width: 100%;
-    aspect-ratio: 1150 / 700;
-    object-fit: cover;
+    max-width: 100%;
+    height: auto;
+    margin-inline: auto;
   }
 
   &:hover {
@@ -321,10 +326,13 @@
   border: 1.5px solid var(--edge);
   background: var(--panel);
 
+  // Contain, not cover: these are figures at thumbnail size, and cropping
+  // one to a 16:10 box leaves an unreadable fragment.
   img {
     width: 100%;
     aspect-ratio: 16 / 10;
-    object-fit: cover;
+    object-fit: contain;
+    padding: 4px;
   }
 }
 
@@ -455,10 +463,13 @@
 // ---------------------------------------------- project detail
 
 .hero-figure {
-  width: 100%;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto var(--gap-l);
   border-radius: var(--radius);
   border: 1.5px solid var(--edge);
-  margin-bottom: var(--gap-l);
+  background: var(--panel);
 }
 
 .facts {
@@ -633,15 +644,19 @@
 
 .fig {
   margin: var(--gap-l) 0;
+  text-align: center;
 
   > img {
-    width: 100%;
+    max-width: 100%;
+    height: auto;
+    margin-inline: auto;
     border-radius: var(--radius-s);
     border: 1.5px solid var(--edge);
     background: var(--panel);
   }
 
   figcaption {
+    text-align: left;
     font-family: var(--mono);
     font-size: 0.68rem;
     line-height: 1.6;
@@ -667,7 +682,9 @@
   align-items: center;
 
   img {
-    width: 100%;
+    max-width: 100%;
+    height: auto;
+    margin-inline: auto;
     border-radius: var(--radius-s);
     border: 1.5px solid var(--edge);
     background: var(--panel);

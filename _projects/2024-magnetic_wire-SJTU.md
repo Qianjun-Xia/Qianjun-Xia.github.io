@@ -4,6 +4,8 @@ tagline: "Magnetically actuated vascular guidewire with Cosserat-rod modeling"
 collection: projects
 permalink: /projects/magnetic_wire/
 teaser: /images/projects/MagneticWire/teaser.webp
+teaser_w: 1920
+teaser_h: 785
 date: 2024-06-01
 status: "To be Submitted"
 kind: research

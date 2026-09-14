@@ -13,7 +13,8 @@ layout: inner
 
 <div class="wrap">
   {%- if page.teaser %}
-  <img class="hero-figure" src="{{ page.teaser | relative_url }}" alt="{{ page.title }}">
+  <img class="hero-figure" src="{{ page.teaser | relative_url }}" alt="{{ page.title }}"
+       {% if page.teaser_w %}width="{{ page.teaser_w }}" height="{{ page.teaser_h }}"{% endif %}>
   {%- endif %}
 
   <div class="facts">
