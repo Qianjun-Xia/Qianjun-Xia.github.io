@@ -60,10 +60,13 @@ const s = window.document.createElement('script');
 s.textContent = fs.readFileSync(`${R}/assets/js/drop.js`, 'utf8');
 window.document.body.appendChild(s);
 
+// The toy listens for pointer events, and drops on the press.
 const click = (x, y) => {
   const t = window.document.querySelector('.land__in');
-  for (const type of ['mousedown','mouseup'])
-    t.dispatchEvent(new window.MouseEvent(type, { bubbles:true, clientX:x, clientY:y, button:0 }));
+  for (const type of ['pointerdown', 'pointerup'])
+    t.dispatchEvent(new window.PointerEvent(type, {
+      bubbles: true, clientX: x, clientY: y, button: 0, pointerType: 'mouse'
+    }));
 };
 
 const CAP = parseInt(/var MAX_ITEMS = (\d+)/.exec(s.textContent)[1], 10);

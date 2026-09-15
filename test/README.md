@@ -22,3 +22,12 @@ itself — with nothing left on the stage.
 ```sh
 node test/gorilla.test.js
 ```
+
+`warmup.test.js` checks the two things that make the first click feel like any
+other: the engine and its ledges are built while the browser is idle, before
+anyone clicks, and a burst of clicks arriving during that load all land rather
+than only the last.
+
+```sh
+node test/warmup.test.js
+```

@@ -2,8 +2,8 @@
  * Click anywhere that is not a control and a small object falls, tumbles and
  * settles — on the page's own text and images, which act as ledges.
  *
- * Matter.js is fetched on the first click, so a visitor who never clicks never
- * pays for it.
+ * Matter.js is fetched once the browser is idle, so the first click costs no
+ * more than the fiftieth, and nothing competes with the page loading.
  */
 (function () {
   "use strict";
@@ -79,7 +79,7 @@
   var ledges = [];       // static bodies mirroring text lines and boxes
   var items = [];        // { body, el, half }
   var loading = false;
-  var queued = null;
+  var queued = [];      // clicks that landed while the library was loading
   var raf = 0;
   var last = 0;
 
@@ -264,8 +264,13 @@
     if (document.fonts && document.fonts.ready) {
       document.fonts.ready.then(rebuildLedges);
     }
+  }
 
+  // The loop runs only while there is something to move.
+  function run() {
+    if (raf) return;
     last = performance.now();
+    owed = 0;
     raf = requestAnimationFrame(tick);
   }
 
@@ -294,6 +299,13 @@
       items[i].el.style.transform =
         "translate(" + (b.position.x - items[i].half) + "px," +
         (b.position.y - items[i].half) + "px) rotate(" + b.angle + "rad)";
+    }
+
+    // Nothing on stage and no gorilla: stop, rather than burn a frame a
+    // sixtieth of a second for the rest of the visit.
+    if (!items.length && !gorilla) {
+      raf = 0;
+      return;
     }
 
     raf = requestAnimationFrame(tick);
@@ -331,6 +343,7 @@
     stage.appendChild(el);
     M.Composite.add(engine.world, body);
     items.push({ body: body, el: el, half: half });
+    run();
 
     if (items.length >= MAX_ITEMS) summonGorilla();
   }
@@ -535,41 +548,68 @@
   // Anything a visitor might be aiming at, rather than the page itself.
   var INTERACTIVE = "a,button,input,textarea,select,label,summary,details,iframe,video,audio,[role=button]";
 
-  var downX = 0, downY = 0, downOK = false;
+  function onPage(t) {
+    return !!t && typeof t.closest === "function" && !t.closest(INTERACTIVE);
+  }
 
-  document.addEventListener("mousedown", function (e) {
-    downX = e.clientX;
-    downY = e.clientY;
-    var t = e.target;
-    downOK = e.button === 0 && !!t && typeof t.closest === "function" && !t.closest(INTERACTIVE);
+  // Mouse drops on the press, not the release: waiting for mouseup put a
+  // visible gap between the click and the object appearing.
+  document.addEventListener("pointerdown", function (e) {
+    if (e.pointerType !== "mouse") {
+      touchX = e.clientX;
+      touchY = e.clientY;
+      touchOK = onPage(e.target);
+      return;
+    }
+    if (e.button !== 0 || !onPage(e.target)) return;
+    drop(e.clientX, e.clientY);
   });
 
-  document.addEventListener("mouseup", function (e) {
-    if (!downOK) return;
-    downOK = false;
+  // Touch and pen wait for the release, so a scroll or a drag is not a drop.
+  var touchX = 0, touchY = 0, touchOK = false;
 
-    // A drag is a selection or a scroll, not a click.
-    if (Math.abs(e.clientX - downX) > 6 || Math.abs(e.clientY - downY) > 6) return;
-
-    var sel = window.getSelection();
-    if (sel && String(sel).length) return;
-
+  document.addEventListener("pointerup", function (e) {
+    if (e.pointerType === "mouse" || !touchOK) return;
+    touchOK = false;
+    if (Math.abs(e.clientX - touchX) > 8 || Math.abs(e.clientY - touchY) > 8) return;
     drop(e.clientX, e.clientY);
   });
 
   function drop(x, y) {
-    if (engine) return spawn(x, y);
+    if (engine) {
+      spawn(x, y);
+      return;
+    }
 
-    queued = { x: x, y: y };
-    loadMatter(function () {
-      loading = false;
-      if (!window.Matter) return;
-      start();
-      if (queued) {
-        spawn(queued.x, queued.y);
-        queued = null;
-      }
-    });
+    // The warm-up usually wins this race, but a click during it is still a
+    // click — hold every one, not just the last.
+    queued.push({ x: x, y: y });
+    loadMatter(ready);
+  }
+
+  function ready() {
+    loading = false;
+    if (!window.Matter) return;
+    if (!engine) start();
+    while (queued.length) {
+      var q = queued.shift();
+      spawn(q.x, q.y);
+    }
+  }
+
+  // Build the world while the browser has nothing better to do, so the first
+  // click is no more expensive than any other: by then the library is parsed,
+  // the engine exists and every ledge has been measured. The animation loop
+  // still waits for something to animate.
+  function warm() {
+    if (engine || loading) return;
+    loadMatter(ready);
+  }
+
+  if (window.requestIdleCallback) {
+    requestIdleCallback(warm, { timeout: 2500 });
+  } else {
+    setTimeout(warm, 1200);
   }
 
   // Pause the loop while the tab is hidden.
@@ -578,10 +618,8 @@
     if (document.hidden) {
       cancelAnimationFrame(raf);
       raf = 0;
-    } else if (!raf) {
-      last = performance.now();
-      owed = 0;
-      raf = requestAnimationFrame(tick);
+    } else if (items.length || gorilla) {
+      run();
     }
   });
 })();

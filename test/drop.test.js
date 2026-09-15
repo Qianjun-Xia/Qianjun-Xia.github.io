@@ -74,10 +74,13 @@ window.document.head.appendChild = function (node) {
 
 inject(fs.readFileSync(`${R}/assets/js/drop.js`, 'utf8'), 'drop');
 
+// The toy listens for pointer events, and drops on the press.
 const click = (x, y) => {
   const t = window.document.querySelector('.land__in');
-  for (const type of ['mousedown', 'mouseup'])
-    t.dispatchEvent(new window.MouseEvent(type, { bubbles:true, clientX:x, clientY:y, button:0 }));
+  for (const type of ['pointerdown', 'pointerup'])
+    t.dispatchEvent(new window.PointerEvent(type, {
+      bubbles: true, clientX: x, clientY: y, button: 0, pointerType: 'mouse'
+    }));
 };
 
 click(600, 200);
