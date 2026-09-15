@@ -1,5 +1,8 @@
 {
-	"name": "OOjs UI icon academic-progressive",
+	"name": "Qianjun Xia",
+	"short_name": "Qianjun Xia",
+	"theme_color": "#453718",
+	"background_color": "#f6efd8",
 	"icons": [
 		{
 			"src": "/images/favicon-192x192.png",
