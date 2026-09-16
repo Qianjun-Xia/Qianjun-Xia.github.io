@@ -1,10 +1,15 @@
 {%- comment -%}
-The cat that sweeps the pile off the side. Same vocabulary as the arm and the
-gorilla — page tokens, rounded shapes — and split into named parts so the tail,
-the head and each front paw move on their own. Positioned by drop.js.
+Mimi — an orange tabby, drawn from photographs: ginger fur with darker
+mackerel stripes, a cream muzzle, chest and socks, the tabby M on the
+forehead, and a dusty pink nose.
 
-The markings here are a placeholder; the shapes are laid out so a real cat's
-patches can be dropped into `.cat-mark-*` without touching the animation.
+Her colouring sits inside the site's palette almost exactly: the accent is
+already a warm amber, so the fur is `--accent`, the stripes are `--ink`
+softened, and the cream is `--ground`. Only the nose is outside it.
+
+Split into named parts so the tail, the head and each front paw move on their
+own. Positioned and driven by drop.js; the animation depends on the class
+names, not on the markings, so her colouring can be adjusted freely.
 {%- endcomment -%}
 <svg class="cat__svg" viewBox="0 0 120 132" aria-hidden="true" focusable="false">
   <!-- Tail, behind everything. Each limb is drawn twice: a wider line in the
@@ -15,23 +20,36 @@ patches can be dropped into `.cat-mark-*` without touching the animation.
           fill="none" stroke-width="15" stroke-linecap="round"/>
     <path class="cat-limb" d="M88 112 C108 110 112 92 104 78 C100 71 92 70 89 76"
           fill="none" stroke-width="10" stroke-linecap="round"/>
+    <g class="cat-stripe" stroke-width="4" stroke-linecap="round" fill="none">
+      <path d="M100 113.5 C101 110 101.5 107 101 104"/>
+      <path d="M108 103 C109.5 100 110 97 109.5 94"/>
+      <path d="M106.5 85 C105.5 82.5 104 80.5 102 79"/>
+    </g>
   </g>
 
   <!-- haunches and body: a sitting egg -->
   <ellipse class="cat-fur" cx="60" cy="94" rx="31" ry="34"/>
-  <ellipse class="cat-skin cat-mark-chest" cx="60" cy="100" rx="17" ry="22"/>
+  <g class="cat-stripe" stroke-width="4.5" stroke-linecap="round" fill="none">
+    <path d="M33 84 C37 86 40 88 42 91"/>
+    <path d="M32 96 C36 97.5 39 99 41 101"/>
+    <path d="M34 108 C38 108.5 41 109 43 110"/>
+    <path d="M87 84 C83 86 80 88 78 91"/>
+    <path d="M88 96 C84 97.5 81 99 79 101"/>
+    <path d="M86 108 C82 108.5 79 109 77 110"/>
+  </g>
+  <ellipse class="cat-cream cat-mark-chest" cx="60" cy="96" rx="12.5" ry="16"/>
 
-  <!-- front legs, each a group so it can swipe on its own -->
+  <!-- front legs, in her cream socks -->
   <g class="cat-paw cat-paw--l">
     <path class="cat-edge" d="M41 103 L39 117" stroke-width="14" stroke-linecap="round" fill="none"/>
     <ellipse class="cat-edge-fill" cx="39" cy="120" rx="9.5" ry="7"/>
-    <path class="cat-limb" d="M41 103 L39 117" stroke-width="9.5" stroke-linecap="round" fill="none"/>
+    <path class="cat-sock" d="M41 103 L39 117" stroke-width="9.5" stroke-linecap="round" fill="none"/>
     <ellipse class="cat-toe" cx="39" cy="120" rx="7.5" ry="5"/>
   </g>
   <g class="cat-paw cat-paw--r">
     <path class="cat-edge" d="M79 103 L81 117" stroke-width="14" stroke-linecap="round" fill="none"/>
     <ellipse class="cat-edge-fill" cx="81" cy="120" rx="9.5" ry="7"/>
-    <path class="cat-limb" d="M79 103 L81 117" stroke-width="9.5" stroke-linecap="round" fill="none"/>
+    <path class="cat-sock" d="M79 103 L81 117" stroke-width="9.5" stroke-linecap="round" fill="none"/>
     <ellipse class="cat-toe" cx="81" cy="120" rx="7.5" ry="5"/>
   </g>
 
@@ -39,13 +57,25 @@ patches can be dropped into `.cat-mark-*` without touching the animation.
     <!-- ears -->
     <path class="cat-fur" d="M36 34 L33 12 L54 24 Z"/>
     <path class="cat-fur" d="M84 34 L87 12 L66 24 Z"/>
-    <path class="cat-skin" d="M39 31 L37.5 19 L49.5 25.5 Z"/>
-    <path class="cat-skin" d="M81 31 L82.5 19 L70.5 25.5 Z"/>
+    <path class="cat-rose" d="M39 31 L37.5 19 L49.5 25.5 Z"/>
+    <path class="cat-rose" d="M81 31 L82.5 19 L70.5 25.5 Z"/>
 
     <circle class="cat-fur" cx="60" cy="46" r="29"/>
-    <path class="cat-skin cat-mark-muzzle" d="M60 44c11 0 17 7 17 15s-8 13-17 13-17-5-17-13 6-15 17-15z"/>
 
-    <!-- eyes: the pupils narrow when it takes aim -->
+    <!-- the tabby M, and the stripes that run back off the cheeks -->
+    <g class="cat-stripe" stroke-width="4" stroke-linecap="round" fill="none">
+      <path d="M60 22 L60 31"/>
+      <path d="M50 24 L52 32"/>
+      <path d="M70 24 L68 32"/>
+      <path d="M36 40 C40 41 43 42.5 45 44"/>
+      <path d="M34 50 C38 50.5 41 51 43 52"/>
+      <path d="M84 40 C80 41 77 42.5 75 44"/>
+      <path d="M86 50 C82 50.5 79 51 77 52"/>
+    </g>
+
+    <path class="cat-cream cat-mark-muzzle" d="M60 44c11 0 17 7 17 15s-8 13-17 13-17-5-17-13 6-15 17-15z"/>
+
+    <!-- eyes: the pupils narrow when she takes aim -->
     <g class="cat-eyes">
       <ellipse class="cat-eye" cx="49" cy="42" rx="7" ry="8"/>
       <ellipse class="cat-eye" cx="71" cy="42" rx="7" ry="8"/>

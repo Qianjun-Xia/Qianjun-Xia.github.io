@@ -995,14 +995,27 @@
   overflow: visible;
 }
 
-.cat-fur,
-.cat-toe {
-  fill: var(--ink);
+// Mimi is an orange tabby, and the palette's accent is already a warm amber —
+// so the fur is the accent, her stripes are the ink softened, and her cream
+// muzzle, chest and socks are the page's own ground.
+.cat-fur {
+  fill: var(--accent);
 }
 
-.cat-skin {
-  fill: var(--accent);
-  opacity: 0.55;
+.cat-cream,
+.cat-toe {
+  fill: var(--ground);
+}
+
+.cat-stripe {
+  stroke: var(--ink);
+  opacity: 0.32;
+}
+
+// The one colour she brings from outside the palette.
+.cat-rose,
+.cat-nose {
+  fill: #c08a72;
 }
 
 // Limbs carry an outline in the page colour, so one crossing the body still
@@ -1017,12 +1030,18 @@
 }
 
 .cat-limb {
-  stroke: var(--ink);
+  stroke: var(--accent);
+}
+
+.cat-sock {
+  stroke: var(--ground);
 }
 
 .cat-eye {
   fill: var(--panel);
 }
+
+// Her eyes read almost black in the photographs, so the pupil carries them.
 
 .cat-pupil {
   fill: var(--ink);
@@ -1030,18 +1049,16 @@
   transform-origin: 60px 42px;
 }
 
-.cat-nose {
-  fill: var(--accent);
-}
-
 .cat-mouth {
   stroke: var(--ink);
-  opacity: 0.75;
+  opacity: 0.55;
 }
 
+// Dark rather than white: they cross the cream muzzle, where a light whisker
+// would be invisible.
 .cat-whiskers {
-  stroke: var(--panel);
-  opacity: 0.45;
+  stroke: var(--ink);
+  opacity: 0.3;
 }
 
 .cat-tail,
