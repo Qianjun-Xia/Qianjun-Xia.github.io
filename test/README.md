@@ -15,12 +15,14 @@ node test/drop.test.js
 
 Exits non-zero on failure.
 
-`gorilla.test.js` fills the pile past its cap and asserts that the gorilla runs
-its whole routine — hops in, beats, inhales every prop, leaves and removes
-itself — with nothing left on the stage.
+`cleaners.test.js` fills the pile past its cap and asserts that a cleaner runs
+its whole routine and leaves nothing on the stage. Which one turns up is a coin
+toss in the page, so the test pins it with `data-cleaner` on `<html>` and takes
+the name as an argument.
 
 ```sh
-node test/gorilla.test.js
+node test/cleaners.test.js gorilla
+node test/cleaners.test.js cat
 ```
 
 `warmup.test.js` checks the two things that make the first click feel like any

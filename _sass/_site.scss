@@ -972,3 +972,273 @@
   scale: 0.25;
   transition: opacity 0.22s ease-in, scale 0.22s ease-in;
 }
+
+// ---------------------------------------------- the cat
+
+// The other cleaner. Where the gorilla draws the pile in, the cat knocks it
+// off the side — so the poses are outward where the gorilla's are inward.
+.cat {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 150px;
+  z-index: 2;
+  pointer-events: none;
+  transform-origin: 50% 100%;
+  will-change: transform;
+}
+
+.cat__svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+.cat-fur,
+.cat-toe {
+  fill: var(--ink);
+}
+
+.cat-skin {
+  fill: var(--accent);
+  opacity: 0.55;
+}
+
+// Limbs carry an outline in the page colour, so one crossing the body still
+// reads rather than melting into the silhouette.
+.cat-edge {
+  stroke: var(--ground);
+  fill: none;
+}
+
+.cat-edge-fill {
+  fill: var(--ground);
+}
+
+.cat-limb {
+  stroke: var(--ink);
+}
+
+.cat-eye {
+  fill: var(--panel);
+}
+
+.cat-pupil {
+  fill: var(--ink);
+  transform-box: view-box;
+  transform-origin: 60px 42px;
+}
+
+.cat-nose {
+  fill: var(--accent);
+}
+
+.cat-mouth {
+  stroke: var(--ink);
+  opacity: 0.75;
+}
+
+.cat-whiskers {
+  stroke: var(--panel);
+  opacity: 0.45;
+}
+
+.cat-tail,
+.cat-head,
+.cat-paw,
+.cat-eyes {
+  transform-box: view-box;
+}
+
+.cat-tail {
+  transform-origin: 88px 112px;
+}
+
+.cat-head {
+  transform-origin: 60px 74px;
+}
+
+.cat-paw--l {
+  transform-origin: 41px 103px;
+}
+
+.cat-paw--r {
+  transform-origin: 79px 103px;
+}
+
+// --- entrance: lighter than the gorilla's, and the tail keeps moving ---
+
+.cat.is-padding {
+  animation: cat-arrive 850ms cubic-bezier(0.25, 0.9, 0.35, 1) forwards;
+}
+
+.cat.is-padding .cat-tail {
+  animation: cat-tail-swish 700ms ease-in-out infinite;
+}
+
+@keyframes cat-arrive {
+  0%   { transform: translate(-50%, 120%) scale(0.85); }
+  35%  { transform: translate(-50%, -10%) scale(1.03); }
+  55%  { transform: translate(-50%, 3%) scale(0.97); }
+  78%  { transform: translate(-50%, -5%) scale(1.01); }
+  100% { transform: translate(-50%, 0) scale(1); }
+}
+
+@keyframes cat-tail-swish {
+  0%, 100% { transform: rotate(-9deg); }
+  50%      { transform: rotate(11deg); }
+}
+
+// --- taking aim: the pupils narrow and the haunches wind up ---
+
+.cat.is-eyeing {
+  transform: translate(-50%, 0);
+  animation: cat-crouch 900ms ease-in-out;
+}
+
+.cat.is-eyeing .cat-tail {
+  animation: cat-tail-flick 450ms ease-in-out infinite;
+}
+
+.cat.is-eyeing .cat-pupil {
+  animation: cat-narrow 500ms ease-out forwards;
+}
+
+@keyframes cat-crouch {
+  0%, 100% { transform: translate(-50%, 0) scale(1, 1); }
+  55%      { transform: translate(-50%, 2%) scale(1.05, 0.93); }
+}
+
+@keyframes cat-tail-flick {
+  0%, 100% { transform: rotate(-16deg); }
+  50%      { transform: rotate(18deg); }
+}
+
+@keyframes cat-narrow {
+  to { transform: scaleX(0.35); }
+}
+
+// --- swelling: much of the pile ends up on the headline, far above a cat.
+// It grows to reach, which is the whole joke. `--cat-s` is the one place the
+// size lives; drop.js has the same number for the paw's reach. ---
+
+.cat {
+  --cat-s: 2.6;
+}
+
+.cat.is-growing {
+  animation: cat-grow 700ms cubic-bezier(0.32, 1.5, 0.5, 1) forwards;
+}
+
+.cat.is-growing .cat-pupil,
+.cat.is-swiping .cat-pupil {
+  transform: scaleX(0.35);
+}
+
+.cat.is-growing .cat-tail {
+  animation: cat-tail-flick 380ms ease-in-out infinite;
+}
+
+@keyframes cat-grow {
+  0%   { transform: translate(-50%, 0) scale(1); }
+  30%  { transform: translate(-50%, 0) scale(0.86, 1.12); }   // gather
+  72%  { transform: translate(-50%, 0) scale(calc(var(--cat-s) * 1.08)); }
+  100% { transform: translate(-50%, 0) scale(var(--cat-s)); }
+}
+
+// --- swiping: the paw that lands is the one drop.js names ---
+
+.cat.is-swiping {
+  transform: translate(-50%, 0) scale(var(--cat-s));
+}
+
+.cat.is-swiping .cat-pupil {
+  transform: scaleX(0.35);
+}
+
+.cat.is-swiping .cat-tail {
+  animation: cat-tail-flick 320ms ease-in-out infinite;
+}
+
+.cat.is-swiping.hit[data-swipe="r"] {
+  animation: cat-lean-r 420ms cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+
+.cat.is-swiping.hit[data-swipe="l"] {
+  animation: cat-lean-l 420ms cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+
+.cat.is-swiping.hit[data-swipe="r"] .cat-paw--r {
+  animation: cat-swipe-r 420ms cubic-bezier(0.3, 1.5, 0.45, 1);
+}
+
+.cat.is-swiping.hit[data-swipe="l"] .cat-paw--l {
+  animation: cat-swipe-l 420ms cubic-bezier(0.3, 1.5, 0.45, 1);
+}
+
+.cat.is-swiping.hit[data-swipe="r"] .cat-head {
+  animation: cat-look-r 420ms ease-out;
+}
+
+.cat.is-swiping.hit[data-swipe="l"] .cat-head {
+  animation: cat-look-l 420ms ease-out;
+}
+
+// The paw winds back, then crosses the body — the wind-up is what sells the
+// force, since the props leave far faster than the drawing can follow.
+@keyframes cat-swipe-r {
+  0%   { transform: rotate(0deg); }
+  22%  { transform: rotate(24deg); }
+  55%  { transform: rotate(-64deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes cat-swipe-l {
+  0%   { transform: rotate(0deg); }
+  22%  { transform: rotate(-24deg); }
+  55%  { transform: rotate(64deg); }
+  100% { transform: rotate(0deg); }
+}
+
+// The lean keyframes carry the scale too: an animation on `transform`
+// replaces it outright, so leaving it out would snap the cat back to its
+// ordinary size for the length of every sweep.
+@keyframes cat-lean-r {
+  0%, 100% { transform: translate(-50%, 0) scale(var(--cat-s)) rotate(0deg); }
+  22%      { transform: translate(-50%, 0) scale(var(--cat-s)) rotate(4deg); }
+  55%      { transform: translate(-50%, -1%) scale(var(--cat-s)) rotate(-7deg); }
+}
+
+@keyframes cat-lean-l {
+  0%, 100% { transform: translate(-50%, 0) scale(var(--cat-s)) rotate(0deg); }
+  22%      { transform: translate(-50%, 0) scale(var(--cat-s)) rotate(-4deg); }
+  55%      { transform: translate(-50%, -1%) scale(var(--cat-s)) rotate(7deg); }
+}
+
+@keyframes cat-look-r {
+  0%, 100% { transform: rotate(0deg); }
+  55%      { transform: rotate(-9deg) translateY(-2px); }
+}
+
+@keyframes cat-look-l {
+  0%, 100% { transform: rotate(0deg); }
+  55%      { transform: rotate(9deg) translateY(-2px); }
+}
+
+// --- exit ---
+
+.cat.is-leaving {
+  animation: cat-leave 750ms cubic-bezier(0.5, 0, 0.8, 0.4) forwards;
+}
+
+.cat.is-leaving .cat-tail {
+  animation: cat-tail-swish 500ms ease-in-out infinite;
+}
+
+// It shrinks back on the way out, so the big paw does not simply vanish.
+@keyframes cat-leave {
+  0%   { transform: translate(-50%, 0) scale(var(--cat-s)); }
+  30%  { transform: translate(-50%, -6%) scale(1.15); }
+  100% { transform: translate(-50%, 125%) scale(0.8); }
+}

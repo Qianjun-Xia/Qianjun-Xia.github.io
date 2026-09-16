@@ -1,5 +1,6 @@
-// Fill the pile past the cap and check the gorilla runs its whole routine:
-// hops in, beats, inhales every prop, then leaves and cleans itself up.
+// Fill the pile past its cap and check each cleaner runs its whole routine and
+// leaves nothing behind — the gorilla drawing the props into its mouth, the cat
+// knocking them off the side of the window.
 const fs = require('fs');
 const path = require('path');
 const { JSDOM } = require('jsdom');
@@ -9,10 +10,22 @@ const strip = t => t.replace(/\{%-?[\s\S]*?-?%\}/g, '');
 const sprite  = strip(fs.readFileSync(`${R}/_includes/drops.html`, 'utf8'));
 const arm     = strip(fs.readFileSync(`${R}/_includes/arm.html`, 'utf8'));
 const gorilla = strip(fs.readFileSync(`${R}/_includes/gorilla.html`, 'utf8'));
+const cat     = strip(fs.readFileSync(`${R}/_includes/cat.html`, 'utf8'));
 
-const dom = new JSDOM(`<!doctype html><html><body>
+const WHO = process.argv[2] || 'gorilla';
+const PHASES = {
+  gorilla: 'hopping,beating,sucking,leaving',
+  cat: 'padding,eyeing,growing,swiping,leaving',
+};
+// The phase that actually empties the pile, sampled to check it does the work
+// rather than leaving it to the sweep at the end.
+const CLEARING = { gorilla: 'sucking', cat: 'swiping' };
+if (!PHASES[WHO]) { console.error('unknown cleaner:', WHO); process.exit(2); }
+
+const dom = new JSDOM(`<!doctype html><html data-cleaner="${WHO}"><body>
 ${sprite}
 <div id="gorilla-art" hidden>${gorilla}</div>
+<div id="cat-art" hidden>${cat}</div>
 <main class="surface"><section class="land"><div class="land__in">
   <div class="land__art">${arm}</div>
   <h1 class="land__name">Qianjun<br>Xia</h1>
@@ -34,8 +47,21 @@ window.Element.prototype.getBoundingClientRect = function () {
     const [x,y,w,h] = BOXES[k];
     return { left:x, top:y, width:w, height:h, right:x+w, bottom:y+h, x, y };
   }
-  if (this.classList?.contains('gor-maw'))
-    return { left:600, top:640, width:20, height:8, right:620, bottom:648, x:600, y:640 };
+  // jsdom has no layout, so give the cleaner's moving parts plausible boxes
+  // relative to where it was placed. Without these the paws sit at 0,0 and
+  // every prop is out of reach.
+  const fig = this.closest?.('.gor, .cat');
+  if (fig) {
+    const fx = parseFloat(fig.style.left) || window.innerWidth / 2;
+    const fy = window.innerHeight;
+    const at = (dx, dy, w, h) => ({ left: fx + dx, top: fy + dy, width: w, height: h,
+                                    right: fx + dx + w, bottom: fy + dy + h, x: fx + dx, y: fy + dy });
+    if (this.classList?.contains('gor-maw'))     return at(-10, -78, 20, 8);
+    if (this.classList?.contains('cat-paw--l'))  return at(-40, -30, 18, 22);
+    if (this.classList?.contains('cat-paw--r'))  return at(22, -30, 18, 22);
+    if (this.classList?.contains('cat-head'))    return at(-36, -120, 72, 70);
+    return at(-75, -150, 150, 150);
+  }
   if (this.tagName === 'A')   return { left:500, top:430, width:200, height:40, right:700, bottom:470, x:500, y:430 };
   if (this.tagName === 'svg') return { left:420, top:20, width:320, height:150, right:740, bottom:170, x:420, y:20 };
   return { left:0, top:0, width:0, height:0, right:0, bottom:0, x:0, y:0 };
@@ -76,11 +102,12 @@ const phases = [];
 const samples = [];
 let suckStart = 0;
 const watch = setInterval(() => {
-  const g = window.document.querySelector('.gor');
+  const g = window.document.querySelector('.gor, .cat');
   if (g) {
-    const p = g.className.replace('gor is-','');
+    // the element may carry extra state classes; the phase is the first one
+    const p = g.className.replace(/^(gor|cat) is-/, '').split(' ')[0];
     if (phases[phases.length-1] !== p) phases.push(p);
-    if (p === 'sucking') {
+    if (p === CLEARING[WHO]) {
       if (!suckStart) suckStart = Date.now();
       samples.push({ t: Date.now() - suckStart,
                      n: window.document.querySelectorAll('.drop-prop:not(.is-eaten)').length });
@@ -95,15 +122,15 @@ const fill = setInterval(() => {
     clearInterval(fill);
     console.log('clicks fired   :', n);
     console.log('props on stage :', window.document.querySelectorAll('.drop-prop').length);
-    const g0 = window.document.querySelector('.gor');
-    console.log('gorilla present:', !!g0);
+    const g0 = window.document.querySelector('.gor, .cat');
+    console.log('cleaner present:', !!g0, '(' + WHO + ')');
     if (g0) {
       const gx = parseFloat(g0.style.left);
       const xs = [...window.document.querySelectorAll('.drop-prop')].map(el => {
         const m = /translate\(([-\d.]+)px/.exec(el.style.transform); return m ? +m[1] : null;
       }).filter(v => v !== null);
       const near = Math.min(...xs.map(x => Math.abs(x - gx)));
-      console.log('gorilla stands :', gx + 'px   nearest prop ' + Math.round(near) + 'px away');
+      console.log('it stands at   :', gx + 'px   nearest prop ' + Math.round(near) + 'px away');
       // content boxes stubbed in this harness, bottom-most is land__foot at y 520-544
       console.log('viewport       :', window.innerWidth + 'x' + window.innerHeight +
                   '   its footprint spans x ' + Math.round(gx-78) + '–' + Math.round(gx+78) +
@@ -121,17 +148,17 @@ const fill = setInterval(() => {
         const x = +m[1], y = +m[2];
         console.log(`   at (${x.toFixed(0)}, ${y.toFixed(0)})  distance ${Math.hypot(x-mouth.x, y-mouth.y).toFixed(0)}`);
       });
-      const gone = !window.document.querySelector('.gor');
+      const gone = !window.document.querySelector('.gor, .cat');
       const clear = samples.find(s => s.n === 0);
       console.log('\nremaining over time:', samples.filter((_,i)=> i%3===0).map(s => s.n).join(' '));
-      console.log('inhale lasted      :', (samples.length * 40) + 'ms over ' + samples.length + ' samples');
+      console.log('clearing took     :', (samples.length * 40) + 'ms over ' + samples.length + ' samples');
       console.log('phases seen    :', phases.join(' -> '));
       console.log('props left     :', left);
-      console.log('gorilla left   :', gone);
+      console.log('it left        :', gone);
       console.log('errors         :', errors.length ? errors : 'none');
 
       const ok = errors.length === 0
-        && phases.join(',') === 'hopping,beating,sucking,leaving'
+        && phases.join(',') === PHASES[WHO]
         && left === 0 && gone;
       console.log('\nRESULT:', ok ? 'PASS' : 'FAIL');
       process.exit(ok ? 0 : 1);

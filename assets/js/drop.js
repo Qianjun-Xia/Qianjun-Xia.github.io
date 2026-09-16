@@ -83,7 +83,6 @@
   var raf = 0;
   var last = 0;
 
-  var gorilla = null;   // { el, phase, mouth: {x, y} }
 
   // ---------------------------------------------------------------- setup
 
@@ -292,7 +291,7 @@
       owed -= STEP;
     }
 
-    stepGorilla(now);
+    stepCleaner(now);
 
     for (var i = 0; i < items.length; i++) {
       var b = items[i].body;
@@ -301,9 +300,9 @@
         (b.position.y - items[i].half) + "px) rotate(" + b.angle + "rad)";
     }
 
-    // Nothing on stage and no gorilla: stop, rather than burn a frame a
+    // Nothing on stage and nobody clearing it: stop, rather than burn a frame a
     // sixtieth of a second for the rest of the visit.
-    if (!items.length && !gorilla) {
+    if (!items.length && !cleaner) {
       raf = 0;
       return;
     }
@@ -345,43 +344,123 @@
     items.push({ body: body, el: el, half: half });
     run();
 
-    if (items.length >= MAX_ITEMS) summonGorilla();
+    if (items.length >= MAX_ITEMS) summon();
   }
 
-  // ---------------------------------------------------------------- gorilla
+  // ---------------------------------------------------------------- cleaners
 
-  // Once the pile is full a gorilla hops in, beats its chest, and inhales the
-  // lot. It runs as a small state machine on timers; the inhale itself is
-  // physics — every prop is pulled toward the mouth each step.
-  function summonGorilla() {
-    if (gorilla) return;
-    var art = document.getElementById("gorilla-art");
-    if (!art) return;                    // page did not ship the artwork
+  // Once the pile is full, somebody comes to clear it. Each cleaner is a list
+  // of timed phases; a phase may carry an `act` that runs every frame while it
+  // holds, and a `done` that ends it early. The class on the element is
+  // `<cls> is-<phase>`, which is what the stylesheet animates.
+  var CLEANERS = [
+    {
+      id: "gorilla",
+      art: "gorilla-art",
+      cls: "gor",
+      // It draws the pile to itself, so distance is no obstacle — and standing
+      // back means it never blocks the view of what it is doing.
+      stand: "clear",
+      phases: [
+        { name: "hopping", ms: 900 },
+        { name: "beating", ms: 1200 },
+        { name: "sucking", ms: 6500, act: inhale, done: pileEmpty, sweep: true },
+        { name: "leaving", ms: 700 }
+      ]
+    },
+    {
+      id: "cat",
+      art: "cat-art",
+      cls: "cat",
+      // It starts at one end of the pile and sweeps across it.
+      spot: catStart,
+      phases: [
+        { name: "padding", ms: 850 },
+        { name: "eyeing", ms: 800 },
+        { name: "growing", ms: 700 },
+        { name: "swiping", ms: 2600, act: swipe, done: pileEmpty, sweep: true },
+        { name: "leaving", ms: 750 }
+      ]
+    }
+  ];
+
+  var cleaner = null;   // { spec, el, step, until }
+
+  function pileEmpty() {
+    return items.length === 0;
+  }
+
+  function summon() {
+    if (cleaner) return;
+
+    // Whoever turns up is a coin toss. `data-cleaner` on <html> pins one
+    // instead, which is how you look at a single routine while working on it.
+    var spec = null;
+    var want = document.documentElement.getAttribute("data-cleaner");
+    if (want) {
+      for (var c = 0; c < CLEANERS.length; c++) {
+        if (CLEANERS[c].id === want) spec = CLEANERS[c];
+      }
+    }
+    if (!spec) spec = CLEANERS[Math.floor(Math.random() * CLEANERS.length)];
+
+    var art = document.getElementById(spec.art);
+    if (!art) return;                    // page did not ship this one's artwork
 
     var el = document.createElement("div");
-    el.className = "gor is-hopping";
+    el.className = spec.cls;
     el.innerHTML = art.innerHTML;
-
-    el.style.left = pickSpot() + "px";
-
+    el.style.left = (spec.spot ? spec.spot() : pickSpot()) + "px";
     stage.appendChild(el);
-    gorilla = { el: el, phase: "hop", until: performance.now() + HOP_MS };
+
+    cleaner = { spec: spec, el: el, step: -1 };
+    advance(performance.now());
   }
 
-  // Where along the bottom edge the gorilla should stand: clear of the page's
-  // own content, and as far from the pile as that allows.
+  function advance(now) {
+    cleaner.step += 1;
+    var phase = cleaner.spec.phases[cleaner.step];
+
+    if (!phase) {                        // the routine is over
+      if (cleaner.el.parentNode) cleaner.el.parentNode.removeChild(cleaner.el);
+      cleaner = null;
+      return;
+    }
+
+    cleaner.until = now + phase.ms;
+    cleaner.el.className = cleaner.spec.cls + " is-" + phase.name;
+  }
+
+  function stepCleaner(now) {
+    if (!cleaner) return;
+
+    var phase = cleaner.spec.phases[cleaner.step];
+    if (phase.act) phase.act(now);
+
+    var over = now >= cleaner.until || (phase.done && phase.done());
+    if (!over) return;
+
+    // A phase that clears the pile takes whatever is still airborne with it,
+    // so the stage is never left holding a prop that no longer collides.
+    if (phase.sweep) while (items.length) consume(items.pop());
+
+    advance(now);
+  }
+
+  // Where along the bottom edge a cleaner that stays put should stand: clear
+  // of the page's own content, and as far from the pile as that allows.
   //
   // Scoring a handful of candidates is enough and costs nothing — fifteen
-  // positions against at most 45 props and 140 ledges, once, when it is
+  // positions against at most 70 props and 140 ledges, once, when it is
   // summoned. A continuous optimum would cost far more and look no different.
-  var GOR_HALF_W = 78;
-  var GOR_H = 150;
+  var FIG_HALF_W = 78;
+  var FIG_H = 150;
 
   function pickSpot() {
     var vw = window.innerWidth;
-    var top = window.innerHeight - GOR_H;
-    var lo = GOR_HALF_W + 8;
-    var hi = vw - GOR_HALF_W - 8;
+    var top = window.innerHeight - FIG_H;
+    var lo = FIG_HALF_W + 8;
+    var hi = vw - FIG_HALF_W - 8;
     if (hi < lo) return vw / 2;
 
     var best = null;
@@ -393,7 +472,7 @@
       var covers = false;
       for (var i = 0; i < ledges.length; i++) {
         var b = ledges[i].body.bounds;
-        if (b.max.y > top && b.max.x > x - GOR_HALF_W && b.min.x < x + GOR_HALF_W) {
+        if (b.max.y > top && b.max.x > x - FIG_HALF_W && b.min.x < x + FIG_HALF_W) {
           covers = true;
           break;
         }
@@ -417,51 +496,34 @@
     return Math.round(best.x);
   }
 
-  // The mouth in viewport coordinates, read off the rendered SVG.
-  function mouthAt() {
-    var maw = gorilla.el.querySelector(".gor-maw");
-    if (!maw) return null;
-    var r = maw.getBoundingClientRect();
+  // A part of the cleaner's artwork, in viewport coordinates.
+  function partAt(sel) {
+    var el = cleaner.el.querySelector(sel);
+    if (!el) return null;
+    var r = el.getBoundingClientRect();
     return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
   }
 
-  function setPhase(phase, ms) {
-    gorilla.phase = phase;
-    gorilla.until = performance.now() + ms;
-    gorilla.el.className = "gor is-" + phase;
+  // Props leave by being drawn in, or by being knocked out of the window.
+  function consume(item) {
+    item.el.classList.add("is-eaten");
+    window.Matter.Composite.remove(engine.world, item.body);
+    setTimeout(function () {
+      if (item.el.parentNode) item.el.parentNode.removeChild(item.el);
+    }, 260);
   }
 
-  function stepGorilla(now) {
-    if (!gorilla) return;
-
-    if (gorilla.phase === "hop" && now >= gorilla.until) {
-      setPhase("beating", BEAT_MS);
-      return;
-    }
-
-    if (gorilla.phase === "beating" && now >= gorilla.until) {
-      setPhase("sucking", SUCK_MS);
-      return;
-    }
-
-    if (gorilla.phase === "sucking") {
-      inhale(now);
-      if (items.length === 0 || now >= gorilla.until) {
-        while (items.length) swallow(items.pop());
-        setPhase("leaving", LEAVE_MS);
-      }
-      return;
-    }
-
-    if (gorilla.phase === "leaving" && now >= gorilla.until) {
-      if (gorilla.el.parentNode) gorilla.el.parentNode.removeChild(gorilla.el);
-      gorilla = null;
-    }
+  function release(item) {
+    item.body.collisionFilter.mask = 0;
+    item.body.frictionAir = 0.008;
+    item.loose = true;
   }
+
+  // ---------------------------------------------------------------- the gorilla
 
   function inhale(now) {
     var M = window.Matter;
-    var mouth = mouthAt();
+    var mouth = partAt(".gor-maw");
     if (!mouth) return;
 
     for (var i = items.length - 1; i >= 0; i--) {
@@ -479,7 +541,7 @@
 
       if (d < 34) {                       // close enough to be swallowed
         items.splice(i, 1);
-        swallow(it);
+        consume(it);
         continue;
       }
 
@@ -523,12 +585,119 @@
     }
   }
 
-  function swallow(item) {
-    item.el.classList.add("is-eaten");
-    window.Matter.Composite.remove(engine.world, item.body);
-    setTimeout(function () {
-      if (item.el.parentNode) item.el.parentNode.removeChild(item.el);
-    }, 260);
+  // ---------------------------------------------------------------- the cat
+
+  // By the time the pile is full it is not only spread across the floor — much
+  // of it is sitting on the headline and the nav, hundreds of pixels up. A cat
+  // the size of a cat cannot reach that, so this one swells first, and then
+  // one sweep of a very large paw takes the lot.
+  var CAT_SCALE = 2.6;              // matches the grow keyframes in the stylesheet
+  var SWIPE_REACH = 420 * CAT_SCALE;
+  var SWIPE_EVERY = 900;            // ms between sweeps
+  var FLING_SPREAD = 760;           // how far apart struck props leave
+  var PILE_PAD = 150;               // where it starts, relative to the end of the pile
+
+  function pileSpan() {
+    if (!items.length) return null;
+    var lo = Infinity, hi = -Infinity, sum = 0;
+    for (var i = 0; i < items.length; i++) {
+      var x = items[i].body.position.x;
+      if (x < lo) lo = x;
+      if (x > hi) hi = x;
+      sum += x;
+    }
+    return { lo: lo, hi: hi, mid: sum / items.length };
+  }
+
+  // It stands at the end of the pile furthest from the nearer screen edge, so
+  // the sweep runs toward that edge and the props have least distance to go.
+  function catStart() {
+    var vw = window.innerWidth;
+    var span = pileSpan();
+    if (!span) return Math.round(vw / 2);
+
+    var toLeft = span.mid < vw / 2;
+    var x = toLeft ? span.hi + PILE_PAD : span.lo - PILE_PAD;
+    return Math.round(Math.max(FIG_HALF_W, Math.min(vw - FIG_HALF_W, x)));
+  }
+
+  function swipe(now) {
+    var M = window.Matter;
+    var phase = cleaner.spec.phases[cleaner.step];
+    var since = now - (cleaner.until - phase.ms);
+
+    if (cleaner.swipes === undefined) {
+      var span = pileSpan();
+      cleaner.dir = span && span.mid < window.innerWidth / 2 ? -1 : 1;
+      cleaner.swipes = 0;
+      cleaner.el.setAttribute("data-swipe", cleaner.dir > 0 ? "r" : "l");
+    }
+
+    // Props struck a moment ago leave now: the sweep connects with everything
+    // at once, but they come off it as a wave rather than on one frame.
+    for (var f = 0; f < items.length; f++) {
+      var fi = items[f];
+      if (fi.flyAt === undefined || now < fi.flyAt || fi.flew) continue;
+      fi.flew = true;
+      if (!fi.loose) release(fi);
+      M.Body.setVelocity(fi.body, { x: fi.flyX, y: fi.flyY });
+      M.Body.setAngularVelocity(fi.body, fi.flySpin);
+    }
+
+    if (since >= cleaner.swipes * SWIPE_EVERY) {
+      // A CSS animation only restarts when its rules change, and the paw is
+      // the same one each time — so the class is pulled and put back, with a
+      // reflow between, to play it again.
+      cleaner.el.classList.remove("hit");
+      void cleaner.el.offsetWidth;
+      cleaner.el.classList.add("hit");
+
+      strike(cleaner.dir, now);
+      cleaner.swipes += 1;
+    }
+
+    // Anything knocked clear of the window is gone.
+    for (var i = items.length - 1; i >= 0; i--) {
+      var p = items[i].body.position;
+      if (p.x < -140 || p.x > window.innerWidth + 140 || p.y > window.innerHeight + 240) {
+        var it = items.splice(i, 1)[0];
+        M.Composite.remove(engine.world, it.body);
+        if (it.el.parentNode) it.el.parentNode.removeChild(it.el);
+      }
+    }
+  }
+
+  function strike(dir, now) {
+    var M = window.Matter;
+    var paw = partAt(".cat-paw--" + (dir > 0 ? "r" : "l")) || partAt(".cat-head");
+    if (!paw) return;
+
+    for (var i = 0; i < items.length; i++) {
+      var it = items[i];
+      var p = it.body.position;
+      var dx = p.x - paw.x;
+      var dy = p.y - paw.y;
+      var d = Math.sqrt(dx * dx + dy * dy) || 1;
+      if (d > SWIPE_REACH) continue;
+
+      // Only what is ahead of the paw: things already behind it have been
+      // swept, and knocking them back the other way undoes the work.
+      if (dx * dir < -60) continue;
+
+      if (it.flyAt !== undefined) continue;    // already on its way
+
+      // A swipe is an impact: it sets the prop moving rather than leaning on
+      // it, since a one-frame force is spent long before anything reaches the
+      // edge of the window. Speed falls off across the paw's reach, and the
+      // upward kick is what makes it an arc instead of a skid. The moment it
+      // leaves is staggered, so the pile comes off in a wave — nearest first.
+      var reach = 1 - d / SWIPE_REACH;
+      var speed = 13 + reach * 13;
+      it.flyAt = now + (1 - reach) * FLING_SPREAD * (0.6 + Math.random() * 0.7);
+      it.flyX = dir * speed * (0.8 + Math.random() * 0.4);
+      it.flyY = -(3 + Math.random() * 6);
+      it.flySpin = dir * (0.25 + Math.random() * 0.5);
+    }
   }
 
   // ---------------------------------------------------------------- input
@@ -618,7 +787,7 @@
     if (document.hidden) {
       cancelAnimationFrame(raf);
       raf = 0;
-    } else if (items.length || gorilla) {
+    } else if (items.length || cleaner) {
       run();
     }
   });

@@ -1,0 +1,65 @@
+{%- comment -%}
+The cat that sweeps the pile off the side. Same vocabulary as the arm and the
+gorilla — page tokens, rounded shapes — and split into named parts so the tail,
+the head and each front paw move on their own. Positioned by drop.js.
+
+The markings here are a placeholder; the shapes are laid out so a real cat's
+patches can be dropped into `.cat-mark-*` without touching the animation.
+{%- endcomment -%}
+<svg class="cat__svg" viewBox="0 0 120 132" aria-hidden="true" focusable="false">
+  <!-- Tail, behind everything. Each limb is drawn twice: a wider line in the
+       page colour first, then the fur on top, so a limb crossing the body
+       still reads instead of melting into the silhouette. -->
+  <g class="cat-tail">
+    <path class="cat-edge" d="M88 112 C108 110 112 92 104 78 C100 71 92 70 89 76"
+          fill="none" stroke-width="15" stroke-linecap="round"/>
+    <path class="cat-limb" d="M88 112 C108 110 112 92 104 78 C100 71 92 70 89 76"
+          fill="none" stroke-width="10" stroke-linecap="round"/>
+  </g>
+
+  <!-- haunches and body: a sitting egg -->
+  <ellipse class="cat-fur" cx="60" cy="94" rx="31" ry="34"/>
+  <ellipse class="cat-skin cat-mark-chest" cx="60" cy="100" rx="17" ry="22"/>
+
+  <!-- front legs, each a group so it can swipe on its own -->
+  <g class="cat-paw cat-paw--l">
+    <path class="cat-edge" d="M41 103 L39 117" stroke-width="14" stroke-linecap="round" fill="none"/>
+    <ellipse class="cat-edge-fill" cx="39" cy="120" rx="9.5" ry="7"/>
+    <path class="cat-limb" d="M41 103 L39 117" stroke-width="9.5" stroke-linecap="round" fill="none"/>
+    <ellipse class="cat-toe" cx="39" cy="120" rx="7.5" ry="5"/>
+  </g>
+  <g class="cat-paw cat-paw--r">
+    <path class="cat-edge" d="M79 103 L81 117" stroke-width="14" stroke-linecap="round" fill="none"/>
+    <ellipse class="cat-edge-fill" cx="81" cy="120" rx="9.5" ry="7"/>
+    <path class="cat-limb" d="M79 103 L81 117" stroke-width="9.5" stroke-linecap="round" fill="none"/>
+    <ellipse class="cat-toe" cx="81" cy="120" rx="7.5" ry="5"/>
+  </g>
+
+  <g class="cat-head">
+    <!-- ears -->
+    <path class="cat-fur" d="M36 34 L33 12 L54 24 Z"/>
+    <path class="cat-fur" d="M84 34 L87 12 L66 24 Z"/>
+    <path class="cat-skin" d="M39 31 L37.5 19 L49.5 25.5 Z"/>
+    <path class="cat-skin" d="M81 31 L82.5 19 L70.5 25.5 Z"/>
+
+    <circle class="cat-fur" cx="60" cy="46" r="29"/>
+    <path class="cat-skin cat-mark-muzzle" d="M60 44c11 0 17 7 17 15s-8 13-17 13-17-5-17-13 6-15 17-15z"/>
+
+    <!-- eyes: the pupils narrow when it takes aim -->
+    <g class="cat-eyes">
+      <ellipse class="cat-eye" cx="49" cy="42" rx="7" ry="8"/>
+      <ellipse class="cat-eye" cx="71" cy="42" rx="7" ry="8"/>
+      <ellipse class="cat-pupil" cx="49" cy="42" rx="3.2" ry="6"/>
+      <ellipse class="cat-pupil" cx="71" cy="42" rx="3.2" ry="6"/>
+    </g>
+
+    <path class="cat-nose" d="M56 55 L64 55 L60 60 Z"/>
+    <path class="cat-mouth" d="M60 60v3M60 63c-2.5 2.5-6 2.5-8 .5M60 63c2.5 2.5 6 2.5 8 .5"
+          fill="none" stroke-width="2.2" stroke-linecap="round"/>
+
+    <g class="cat-whiskers" stroke-width="2" stroke-linecap="round" fill="none">
+      <path d="M42 54 L26 50M42 59 L26 60"/>
+      <path d="M78 54 L94 50M78 59 L94 60"/>
+    </g>
+  </g>
+</svg>
