@@ -1,95 +1,159 @@
 {%- comment -%}
-Mimi — an orange tabby, drawn from photographs: ginger fur with darker
-mackerel stripes, a cream muzzle, chest and socks, the tabby M on the
-forehead, and a dusty pink nose.
+Mimi, come to sweep up.
 
-Her colouring sits inside the site's palette almost exactly: the accent is
-already a warm amber, so the fur is `--accent`, the stripes are `--ink`
-softened, and the cream is `--ground`. Only the nose is outside it.
+Drawn after the illustration Qianjun supplied rather than after a photograph:
+soft ginger fur shaded with gradients, a round head wider at the cheeks than at
+the crown, and eyes large enough to fill their sockets — which, with the
+highlights, is most of what separates a drawing that reads as cute from one
+that reads as a diagram of a cat.
 
-Split into named parts so the tail, the head and each front paw move on their
-own. Positioned and driven by drop.js; the animation depends on the class
-names, not on the markings, so her colouring can be adjusted freely.
+She keeps her own ginger ramp instead of the page tokens: an orange tabby
+needs more than one orange, and flattening her to the accent is what made the
+first attempt look like a pictogram. The ramp is warm and sits beside the
+Butter palette without clashing.
+
+Parts are named for the animation — tail, head, each paw, and the broom, which
+turns about the paw holding it. drop.js reads `.cat-bristles` for the point the
+sweep lands on.
 {%- endcomment -%}
 <svg class="cat__svg" viewBox="0 0 120 132" aria-hidden="true" focusable="false">
-  <!-- Tail, behind everything. Each limb is drawn twice: a wider line in the
-       page colour first, then the fur on top, so a limb crossing the body
-       still reads instead of melting into the silhouette. -->
+  <defs>
+    <linearGradient id="mimiCoat" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e3a95f"/>
+      <stop offset="0.55" stop-color="#cd8a3c"/>
+      <stop offset="1" stop-color="#b3722c"/>
+    </linearGradient>
+    <linearGradient id="mimiBody" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#d4913f"/>
+      <stop offset="1" stop-color="#b3722c"/>
+    </linearGradient>
+    <radialGradient id="mimiCream" cx="0.5" cy="0.45" r="0.62">
+      <stop offset="0.45" stop-color="#fbf1dd" stop-opacity="1"/>
+      <stop offset="0.8" stop-color="#f6e7cc" stop-opacity="0.85"/>
+      <stop offset="1" stop-color="#f0dcb8" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="mimiIris" cx="0.42" cy="0.62" r="0.72">
+      <stop offset="0" stop-color="#6b4420"/>
+      <stop offset="0.6" stop-color="#3b2410"/>
+      <stop offset="1" stop-color="#241508"/>
+    </radialGradient>
+    <radialGradient id="mimiEar" cx="0.5" cy="0.7" r="0.7">
+      <stop offset="0" stop-color="#eeb3a2"/>
+      <stop offset="1" stop-color="#d98f7c"/>
+    </radialGradient>
+  </defs>
+
+  <!-- the shadow she casts on the page -->
+  <ellipse class="cat-shadow" cx="60" cy="128" rx="34" ry="5"/>
+
+  <!-- tail, curling up on her free side -->
   <g class="cat-tail">
-    <path class="cat-edge" d="M88 112 C108 110 112 92 104 78 C100 71 92 70 89 76"
-          fill="none" stroke-width="15" stroke-linecap="round"/>
-    <path class="cat-limb" d="M88 112 C108 110 112 92 104 78 C100 71 92 70 89 76"
-          fill="none" stroke-width="10" stroke-linecap="round"/>
-    <g class="cat-stripe" stroke-width="4" stroke-linecap="round" fill="none">
-      <path d="M100 113.5 C101 110 101.5 107 101 104"/>
-      <path d="M108 103 C109.5 100 110 97 109.5 94"/>
-      <path d="M106.5 85 C105.5 82.5 104 80.5 102 79"/>
+    <path class="cat-tail-fur" d="M38 118 C17 119 9 103 14 89 C17 81 26 79 30 85"
+          fill="none" stroke-width="13" stroke-linecap="round"/>
+    <g class="cat-stripe" stroke-width="3.6" stroke-linecap="round" fill="none">
+      <path d="M27 119 C26 116 25.6 113 26.2 110"/>
+      <path d="M15.5 109 C14 106 13.6 103 14.4 100"/>
+      <path d="M14.6 93 C15.8 90 17.4 88 19.6 86.5"/>
     </g>
   </g>
 
-  <!-- haunches and body: a sitting egg -->
-  <ellipse class="cat-fur" cx="60" cy="94" rx="31" ry="34"/>
-  <g class="cat-stripe" stroke-width="4.5" stroke-linecap="round" fill="none">
-    <path d="M33 84 C37 86 40 88 42 91"/>
-    <path d="M32 96 C36 97.5 39 99 41 101"/>
-    <path d="M34 108 C38 108.5 41 109 43 110"/>
-    <path d="M87 84 C83 86 80 88 78 91"/>
-    <path d="M88 96 C84 97.5 81 99 79 101"/>
-    <path d="M86 108 C82 108.5 79 109 77 110"/>
+  <!-- body: small, so the head can be large -->
+  <ellipse class="cat-body" cx="60" cy="104" rx="27" ry="25"/>
+  <g class="cat-stripe" stroke-width="3.6" stroke-linecap="round" fill="none">
+    <path d="M36 96 C39.5 97.6 42 99.2 43.6 101.4"/>
+    <path d="M35 107 C38.5 108 41 109 42.6 110.6"/>
+    <path d="M84 96 C80.5 97.6 78 99.2 76.4 101.4"/>
+    <path d="M85 107 C81.5 108 79 109 77.4 110.6"/>
   </g>
-  <ellipse class="cat-cream cat-mark-chest" cx="60" cy="96" rx="12.5" ry="16"/>
+  <ellipse class="cat-cream" cx="60" cy="110" rx="13" ry="16"/>
 
-  <!-- front legs, in her cream socks -->
+  <!-- her free paw -->
   <g class="cat-paw cat-paw--l">
-    <path class="cat-edge" d="M41 103 L39 117" stroke-width="14" stroke-linecap="round" fill="none"/>
-    <ellipse class="cat-edge-fill" cx="39" cy="120" rx="9.5" ry="7"/>
-    <path class="cat-sock" d="M41 103 L39 117" stroke-width="9.5" stroke-linecap="round" fill="none"/>
-    <ellipse class="cat-toe" cx="39" cy="120" rx="7.5" ry="5"/>
+    <path class="cat-sock" d="M44 106 L40 119" stroke-width="12" stroke-linecap="round" fill="none"/>
+    <ellipse class="cat-toe" cx="39.5" cy="121" rx="9" ry="6.6"/>
+    <g class="cat-toeline" stroke-width="1.4" stroke-linecap="round" fill="none">
+      <path d="M36.5 117.5 L36 121M39.5 117 L39.5 121M42.5 117.5 L43 121"/>
+    </g>
+  </g>
+
+  <!-- the broom, and the paw holding it -->
+  <g class="cat-broom">
+    <path class="cat-handle" d="M100 66 L72 121" stroke-width="4.6" stroke-linecap="round" fill="none"/>
+    <g class="cat-bristles">
+      <path class="cat-bristle-block" d="M62 117 L83 117 L88 131 L57 131 Z"/>
+      <g class="cat-bristle-line" stroke-width="1.6" stroke-linecap="round" fill="none">
+        <path d="M67 119 L64.5 130M72.5 119 L72.5 130M78 119 L80.5 130"/>
+      </g>
+    </g>
   </g>
   <g class="cat-paw cat-paw--r">
-    <path class="cat-edge" d="M79 103 L81 117" stroke-width="14" stroke-linecap="round" fill="none"/>
-    <ellipse class="cat-edge-fill" cx="81" cy="120" rx="9.5" ry="7"/>
-    <path class="cat-sock" d="M79 103 L81 117" stroke-width="9.5" stroke-linecap="round" fill="none"/>
-    <ellipse class="cat-toe" cx="81" cy="120" rx="7.5" ry="5"/>
+    <path class="cat-sock" d="M77 104 L82 113" stroke-width="12" stroke-linecap="round" fill="none"/>
+    <ellipse class="cat-toe" cx="83" cy="114" rx="9" ry="6.6"/>
+    <g class="cat-toeline" stroke-width="1.4" stroke-linecap="round" fill="none">
+      <path d="M80 110.5 L79.5 114M83 110 L83 114M86 110.5 L86.5 114"/>
+    </g>
   </g>
 
   <g class="cat-head">
     <!-- ears -->
-    <path class="cat-fur" d="M36 34 L33 12 L54 24 Z"/>
-    <path class="cat-fur" d="M84 34 L87 12 L66 24 Z"/>
-    <path class="cat-rose" d="M39 31 L37.5 19 L49.5 25.5 Z"/>
-    <path class="cat-rose" d="M81 31 L82.5 19 L70.5 25.5 Z"/>
+    <path class="cat-fur" d="M23 47 C17 27 20 4 28 5 C38 8 51 18 58 30 Z"/>
+    <path class="cat-fur" d="M97 47 C103 27 100 4 92 5 C82 8 69 18 62 30 Z"/>
+    <path class="cat-ear-in" d="M27.5 42 C23 27 25.5 12 31 13 C38.5 15.6 47 23 52.5 31 Z"/>
+    <path class="cat-ear-in" d="M92.5 42 C97 27 94.5 12 89 13 C81.5 15.6 73 23 67.5 31 Z"/>
 
-    <circle class="cat-fur" cx="60" cy="46" r="29"/>
+    <!-- head: widest at the cheeks, which is what makes it read as a kitten -->
+    <path class="cat-fur" d="M60 14
+      C39 14 23 28 23 48
+      C23 65 31 78 45 83
+      C51 85.2 69 85.2 75 83
+      C89 78 97 65 97 48
+      C97 28 81 14 60 14 Z"/>
 
-    <!-- the tabby M, and the stripes that run back off the cheeks -->
-    <g class="cat-stripe" stroke-width="4" stroke-linecap="round" fill="none">
-      <path d="M60 22 L60 31"/>
-      <path d="M50 24 L52 32"/>
-      <path d="M70 24 L68 32"/>
-      <path d="M36 40 C40 41 43 42.5 45 44"/>
-      <path d="M34 50 C38 50.5 41 51 43 52"/>
-      <path d="M84 40 C80 41 77 42.5 75 44"/>
-      <path d="M86 50 C82 50.5 79 51 77 52"/>
+    <!-- the M on her forehead, and the stripes running back off her cheeks -->
+    <g class="cat-stripe" stroke-width="3.4" stroke-linecap="round" fill="none">
+      <path d="M60 19 L60 29"/>
+      <path d="M50 21 L53 30"/>
+      <path d="M70 21 L67 30"/>
+      <path d="M27 47 C31.5 48 35 49.6 37.6 51.4"/>
+      <path d="M26 58 C30.5 58.6 34 59.2 36.6 60.4"/>
+      <path d="M93 47 C88.5 48 85 49.6 82.4 51.4"/>
+      <path d="M94 58 C89.5 58.6 86 59.2 83.4 60.4"/>
     </g>
 
-    <path class="cat-cream cat-mark-muzzle" d="M60 44c11 0 17 7 17 15s-8 13-17 13-17-5-17-13 6-15 17-15z"/>
+    <!-- muzzle: cheek puffs and chin, fading out at the edges -->
+    <path class="cat-cream" d="M60 59
+      C52 56.5 41 60 41 67.5
+      C41 75 49.5 80 60 80
+      C70.5 80 79 75 79 67.5
+      C79 60 68 56.5 60 59 Z"/>
 
-    <!-- eyes: the pupils narrow when she takes aim -->
+    <!-- Eyes: nearly all iris, with the highlights that make them glossy. -->
     <g class="cat-eyes">
-      <ellipse class="cat-eye" cx="49" cy="42" rx="7" ry="8"/>
-      <ellipse class="cat-eye" cx="71" cy="42" rx="7" ry="8"/>
-      <ellipse class="cat-pupil" cx="49" cy="42" rx="3.2" ry="6"/>
-      <ellipse class="cat-pupil" cx="71" cy="42" rx="3.2" ry="6"/>
+      <ellipse class="cat-eye-line" cx="46" cy="50" rx="10.8" ry="11.8"/>
+      <ellipse class="cat-eye-line" cx="74" cy="50" rx="10.8" ry="11.8"/>
+      <ellipse class="cat-pupil" cx="46" cy="50" rx="9.8" ry="10.8"/>
+      <ellipse class="cat-pupil" cx="74" cy="50" rx="9.8" ry="10.8"/>
+      <circle class="cat-glint" cx="42.2" cy="45.4" r="3.5"/>
+      <circle class="cat-glint" cx="70.2" cy="45.4" r="3.5"/>
+      <circle class="cat-glint cat-glint--sm" cx="49.6" cy="55" r="1.8"/>
+      <circle class="cat-glint cat-glint--sm" cx="77.6" cy="55" r="1.8"/>
     </g>
 
-    <path class="cat-nose" d="M56 55 L64 55 L60 60 Z"/>
-    <path class="cat-mouth" d="M60 60v3M60 63c-2.5 2.5-6 2.5-8 .5M60 63c2.5 2.5 6 2.5 8 .5"
-          fill="none" stroke-width="2.2" stroke-linecap="round"/>
+    <ellipse class="cat-blush" cx="33" cy="64" rx="8" ry="4.4"/>
+    <ellipse class="cat-blush" cx="87" cy="64" rx="8" ry="4.4"/>
 
-    <g class="cat-whiskers" stroke-width="2" stroke-linecap="round" fill="none">
-      <path d="M42 54 L26 50M42 59 L26 60"/>
-      <path d="M78 54 L94 50M78 59 L94 60"/>
+    <path class="cat-nose" d="M55.6 63 C57.4 61.2 62.6 61.2 64.4 63
+      C63 66.8 61 68.6 60 68.6 C59 68.6 57 66.8 55.6 63 Z"/>
+    <path class="cat-mouth" d="M60 69 L60 71
+      M60 71 C58.4 73.6 55.2 73.6 54 71.4
+      M60 71 C61.6 73.6 64.8 73.6 66 71.4"
+          fill="none" stroke-width="1.8" stroke-linecap="round"/>
+
+    <g class="cat-whiskers" stroke-width="1.5" stroke-linecap="round" fill="none">
+      <path d="M41 65 C33 63 27 61 22 58"/>
+      <path d="M41 69 C33 69.5 27 70.5 22 72"/>
+      <path d="M79 65 C87 63 93 61 98 58"/>
+      <path d="M79 69 C87 69.5 93 70.5 98 72"/>
     </g>
   </g>
 </svg>

@@ -15,11 +15,11 @@ const cat     = strip(fs.readFileSync(`${R}/_includes/cat.html`, 'utf8'));
 const WHO = process.argv[2] || 'gorilla';
 const PHASES = {
   gorilla: 'hopping,beating,sucking,leaving',
-  cat: 'padding,eyeing,growing,swiping,leaving',
+  cat: 'padding,eyeing,sweeping,leaving',
 };
 // The phase that actually empties the pile, sampled to check it does the work
 // rather than leaving it to the sweep at the end.
-const CLEARING = { gorilla: 'sucking', cat: 'swiping' };
+const CLEARING = { gorilla: 'sucking', cat: 'sweeping' };
 if (!PHASES[WHO]) { console.error('unknown cleaner:', WHO); process.exit(2); }
 
 const dom = new JSDOM(`<!doctype html><html data-cleaner="${WHO}"><body>
@@ -57,9 +57,10 @@ window.Element.prototype.getBoundingClientRect = function () {
     const at = (dx, dy, w, h) => ({ left: fx + dx, top: fy + dy, width: w, height: h,
                                     right: fx + dx + w, bottom: fy + dy + h, x: fx + dx, y: fy + dy });
     if (this.classList?.contains('gor-maw'))     return at(-10, -78, 20, 8);
+    if (this.classList?.contains('cat-bristles')) return at(6, -20, 38, 18);
     if (this.classList?.contains('cat-paw--l'))  return at(-40, -30, 18, 22);
     if (this.classList?.contains('cat-paw--r'))  return at(22, -30, 18, 22);
-    if (this.classList?.contains('cat-head'))    return at(-36, -120, 72, 70);
+    if (this.classList?.contains('cat-head'))    return at(-42, -132, 84, 80);
     return at(-75, -150, 150, 150);
   }
   if (this.tagName === 'A')   return { left:500, top:430, width:200, height:40, right:700, bottom:470, x:500, y:430 };

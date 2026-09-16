@@ -372,13 +372,12 @@
       id: "cat",
       art: "cat-art",
       cls: "cat",
-      // It starts at one end of the pile and sweeps across it.
+      // She starts at one end of the mess and works across it.
       spot: catStart,
       phases: [
         { name: "padding", ms: 850 },
-        { name: "eyeing", ms: 800 },
-        { name: "growing", ms: 700 },
-        { name: "swiping", ms: 2600, act: swipe, done: pileEmpty, sweep: true },
+        { name: "eyeing", ms: 900, enter: shakeLoose },
+        { name: "sweeping", ms: 7000, act: sweepUp, done: pileEmpty, sweep: true },
         { name: "leaving", ms: 750 }
       ]
     }
@@ -429,6 +428,7 @@
 
     cleaner.until = now + phase.ms;
     cleaner.el.className = cleaner.spec.cls + " is-" + phase.name;
+    if (phase.enter) phase.enter();
   }
 
   function stepCleaner(now) {
@@ -587,15 +587,15 @@
 
   // ---------------------------------------------------------------- the cat
 
-  // By the time the pile is full it is not only spread across the floor — much
-  // of it is sitting on the headline and the nav, hundreds of pixels up. A cat
-  // the size of a cat cannot reach that, so this one swells first, and then
-  // one sweep of a very large paw takes the lot.
-  var CAT_SCALE = 2.6;              // matches the grow keyframes in the stylesheet
-  var SWIPE_REACH = 420 * CAT_SCALE;
-  var SWIPE_EVERY = 900;            // ms between sweeps
-  var FLING_SPREAD = 760;           // how far apart struck props leave
-  var PILE_PAD = 150;               // where it starts, relative to the end of the pile
+  // A broom sweeps a floor, and much of a full pile is not on the floor — it is
+  // sitting on the headline and the nav, hundreds of pixels up. So the ledges
+  // let go when she arrives: everything tumbles down first, and then there is a
+  // floor to sweep. She works one patch at a time, walking on to the next when
+  // the one in front of her is clear.
+  var BROOM_REACH = 280;      // how far a stroke carries
+  var STROKE_EVERY = 340;     // ms between strokes while she is in position
+  var WALK_SPEED = 0.85;      // px per ms
+  var PILE_PAD = 120;         // where she starts, relative to the end of the mess
 
   function pileSpan() {
     if (!items.length) return null;
@@ -609,7 +609,7 @@
     return { lo: lo, hi: hi, mid: sum / items.length };
   }
 
-  // It stands at the end of the pile furthest from the nearer screen edge, so
+  // She stands at the end of the mess furthest from the nearer screen edge, so
   // the sweep runs toward that edge and the props have least distance to go.
   function catStart() {
     var vw = window.innerWidth;
@@ -621,82 +621,137 @@
     return Math.round(Math.max(FIG_HALF_W, Math.min(vw - FIG_HALF_W, x)));
   }
 
-  function swipe(now) {
+  // The page stops holding anything up, so the mess falls to the floor where a
+  // broom can reach it. Without this she would sweep an empty floor while most
+  // of the pile sat on the headline above her.
+  function shakeLoose() {
     var M = window.Matter;
-    var phase = cleaner.spec.phases[cleaner.step];
-    var since = now - (cleaner.until - phase.ms);
+    for (var i = 0; i < ledges.length; i++) M.Composite.remove(engine.world, ledges[i].body);
+    ledges = [];
+    for (var j = 0; j < items.length; j++) {
+      M.Body.setAngularVelocity(items[j].body, (Math.random() - 0.5) * 0.4);
+    }
+  }
 
-    if (cleaner.swipes === undefined) {
+  function sweepUp(now) {
+    var M = window.Matter;
+
+    if (cleaner.at === undefined) {
+      cleaner.at = parseFloat(cleaner.el.style.left) || window.innerWidth / 2;
       var span = pileSpan();
       cleaner.dir = span && span.mid < window.innerWidth / 2 ? -1 : 1;
-      cleaner.swipes = 0;
-      cleaner.el.setAttribute("data-swipe", cleaner.dir > 0 ? "r" : "l");
+      cleaner.el.setAttribute("data-face", cleaner.dir > 0 ? "r" : "l");
+      cleaner.nextStroke = now;
+      cleaner.last = now;
     }
 
-    // Props struck a moment ago leave now: the sweep connects with everything
-    // at once, but they come off it as a wave rather than on one frame.
-    for (var f = 0; f < items.length; f++) {
-      var fi = items[f];
-      if (fi.flyAt === undefined || now < fi.flyAt || fi.flew) continue;
-      fi.flew = true;
-      if (!fi.loose) release(fi);
-      M.Body.setVelocity(fi.body, { x: fi.flyX, y: fi.flyY });
-      M.Body.setAngularVelocity(fi.body, fi.flySpin);
+    var dt = Math.min(now - cleaner.last, 48);
+    cleaner.last = now;
+
+    var broom = partAt(".cat-bristles");
+    var reached = 0;
+    if (broom) {
+      for (var i = 0; i < items.length; i++) {
+        var p = items[i].body.position;
+        if (Math.abs(p.x - broom.x) <= BROOM_REACH && (p.x - broom.x) * cleaner.dir > -40) reached++;
+      }
     }
 
-    if (since >= cleaner.swipes * SWIPE_EVERY) {
-      // A CSS animation only restarts when its rules change, and the paw is
-      // the same one each time — so the class is pulled and put back, with a
-      // reflow between, to play it again.
+    if (reached > 0) {
+      // Standing over a patch: sweep it.
+      cleaner.el.setAttribute("data-move", "sweep");
+      if (now >= cleaner.nextStroke) {
+        // A CSS animation only restarts when its rules change, so the class is
+        // pulled and put back, with a reflow between, to play it again.
+        cleaner.el.classList.remove("hit");
+        void cleaner.el.offsetWidth;
+        cleaner.el.classList.add("hit");
+        stroke(now);
+        cleaner.nextStroke = now + STROKE_EVERY;
+      }
+    } else {
+      // Nothing in front of her: walk on to whatever is left.
       cleaner.el.classList.remove("hit");
-      void cleaner.el.offsetWidth;
-      cleaner.el.classList.add("hit");
-
-      strike(cleaner.dir, now);
-      cleaner.swipes += 1;
+      var next = nextPatch();
+      if (next) {
+        if (next.dir !== cleaner.dir) {
+          cleaner.dir = next.dir;
+          cleaner.el.setAttribute("data-face", next.dir > 0 ? "r" : "l");
+        }
+        cleaner.el.setAttribute("data-move", "walk");
+        var step = Math.sign(next.x - cleaner.at) * WALK_SPEED * dt;
+        cleaner.at = Math.abs(next.x - cleaner.at) <= Math.abs(step) ? next.x : cleaner.at + step;
+        cleaner.el.style.left = Math.round(cleaner.at) + "px";
+        cleaner.nextStroke = now + 120;   // a beat to plant the broom
+      } else {
+        cleaner.el.setAttribute("data-move", "sweep");
+      }
     }
 
-    // Anything knocked clear of the window is gone.
-    for (var i = items.length - 1; i >= 0; i--) {
-      var p = items[i].body.position;
-      if (p.x < -140 || p.x > window.innerWidth + 140 || p.y > window.innerHeight + 240) {
-        var it = items.splice(i, 1)[0];
+    // Anything swept clear of the window is gone.
+    for (var k = items.length - 1; k >= 0; k--) {
+      var q = items[k].body.position;
+      if (q.x < -140 || q.x > window.innerWidth + 140 || q.y > window.innerHeight + 240) {
+        var it = items.splice(k, 1)[0];
         M.Composite.remove(engine.world, it.body);
         if (it.el.parentNode) it.el.parentNode.removeChild(it.el);
       }
     }
   }
 
-  function strike(dir, now) {
+  // Where to stand next. She keeps going the way she was going and takes the
+  // nearest thing ahead; only when there is nothing left ahead does she turn
+  // around for the stragglers. Always picking the furthest-back prop instead
+  // had her walking back and forth over ground she had already done.
+  function nextPatch() {
+    if (!items.length) return null;
+
+    var ahead = null, behind = null;
+    for (var i = 0; i < items.length; i++) {
+      var x = items[i].body.position.x;
+      var gap = (x - cleaner.at) * cleaner.dir;      // positive means ahead
+      if (gap > 0) {
+        if (ahead === null || gap < ahead.gap) ahead = { x: x, gap: gap };
+      } else if (behind === null || -gap < behind.gap) {
+        behind = { x: x, gap: -gap };
+      }
+    }
+
+    var pick = ahead || behind;
+    if (!pick) return null;
+    var dir = ahead ? cleaner.dir : -cleaner.dir;
+
+    // Stand back from it, so the stroke catches it rather than straddling it.
+    var stand = pick.x - dir * (BROOM_REACH * 0.55);
+    return {
+      x: Math.max(FIG_HALF_W, Math.min(window.innerWidth - FIG_HALF_W, stand)),
+      dir: dir
+    };
+  }
+
+  function stroke(now) {
     var M = window.Matter;
-    var paw = partAt(".cat-paw--" + (dir > 0 ? "r" : "l")) || partAt(".cat-head");
-    if (!paw) return;
+    var broom = partAt(".cat-bristles");
+    if (!broom) return;
 
     for (var i = 0; i < items.length; i++) {
       var it = items[i];
       var p = it.body.position;
-      var dx = p.x - paw.x;
-      var dy = p.y - paw.y;
-      var d = Math.sqrt(dx * dx + dy * dy) || 1;
-      if (d > SWIPE_REACH) continue;
+      var dx = p.x - broom.x;
+      var dy = p.y - broom.y;
+      if (Math.abs(dx) > BROOM_REACH || dy < -220 || dy > 160) continue;
+      if (dx * cleaner.dir < -40) continue;    // already behind the broom
 
-      // Only what is ahead of the paw: things already behind it have been
-      // swept, and knocking them back the other way undoes the work.
-      if (dx * dir < -60) continue;
-
-      if (it.flyAt !== undefined) continue;    // already on its way
-
-      // A swipe is an impact: it sets the prop moving rather than leaning on
-      // it, since a one-frame force is spent long before anything reaches the
-      // edge of the window. Speed falls off across the paw's reach, and the
-      // upward kick is what makes it an arc instead of a skid. The moment it
-      // leaves is staggered, so the pile comes off in a wave — nearest first.
-      var reach = 1 - d / SWIPE_REACH;
-      var speed = 13 + reach * 13;
-      it.flyAt = now + (1 - reach) * FLING_SPREAD * (0.6 + Math.random() * 0.7);
-      it.flyX = dir * speed * (0.8 + Math.random() * 0.4);
-      it.flyY = -(3 + Math.random() * 6);
-      it.flySpin = dir * (0.25 + Math.random() * 0.5);
+      // Swept, not launched: a stroke pushes things along the floor at a speed
+      // you can follow, rather than firing them off the screen.
+      var near = 1 - Math.abs(dx) / BROOM_REACH;
+      it.body.collisionFilter.mask = 0;        // stop it snagging on the page
+      it.body.frictionAir = 0.011;
+      M.Body.setVelocity(it.body, {
+        x: cleaner.dir * (12 + near * 8) * (0.85 + Math.random() * 0.3),
+        y: -(0.6 + Math.random() * 2.2)
+      });
+      M.Body.setAngularVelocity(it.body, cleaner.dir * (0.15 + Math.random() * 0.3));
     }
   }
 
